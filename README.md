@@ -1,5 +1,5 @@
 # <center>Skills</center>
-## 后端开发技能要求：  
+## <font color = pink>后端开发技能要求：<font>  
 **·** [C++相关]()  
 **·** [网络编程]()  
 **·** [Linux环境]()  
