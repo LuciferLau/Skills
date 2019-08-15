@@ -1,4 +1,4 @@
-# <center>Skills</center>
+<center># Skills</center>
 后端开发技能要求：  
 **·** [C++相关]()  
 **·** [网络编程]()  
