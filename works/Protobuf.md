@@ -7,4 +7,7 @@
     1、协议号
 目前protobuf最新的版本是proto3，与proto2的旧API不能完全兼容。
 一般的，会在文件的头部进行协议版本的声明，若无，则默认为proto2，代码格式如下：  
-`syntax = "proto3";`
+```
+syntax = "proto3"; //使用proto3
+syntax = "proto2"; //使用proto2
+```
