@@ -62,3 +62,24 @@ db.collection.find().pretty() | 格式化输出文档
 不等于 &ne:|	{\<key>:{$ne:\<value>}}	|db.col.find({"likes":{$ne:50}}).pretty()	|where likes != 50
 与 ,| {key1:value1, key2:value2}|...|where A AND B
 或 $or:| $or:\[{key1: value1}, {key2:value2}]|...|where A OR B
+#### $type操作符用于匹配数据类型
+Type| enum
+-|-
+Double|	1	 
+String|	2	 
+Object|	3	 
+Array	|4	 
+Binary data|	5	 
+Object id	|7	 
+Boolean	|8	 
+Date	|9	 
+Null	|10	 
+Regular Expression	|11	 
+JavaScript	|13	 
+Symbol	|14	 
+JavaScript (with scope)|	15	 
+32-bit integer	|16	 
+Timestamp	|17	 
+64-bit integer|	18	 
+Min key	255	(Query with -1.)
+Max key	127
