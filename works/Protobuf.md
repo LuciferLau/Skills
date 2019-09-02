@@ -49,8 +49,14 @@ However,this view is not universal.
 > enum和map  
 > Any和Oneof  
 > package和service  
-> 编译方法  
->> `protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR --go_out=DST_DIR --ruby_out=DST_DIR --objc_out=DST_DIR --csharp_out=DST_DIR path/to/file.proto
-`
+> 编译方法: run the protocol buffer compiler protoc on the .proto   
+>> ```
+protoc --proto_path=IMPORT_PATH  //编译器名 文件相对路径
+--cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR  
+--go_out=DST_DIR --ruby_out=DST_DIR --objc_out=DST_DIR --csharp_out=DST_DIR  //使用哪种语言
+path/to/file.proto //绝对路径
+下面是C++的一个例子
+protoc --proto_path=src --cpp_out=build/gen src/foo.proto src/bar/baz.proto
+```
 ## 参考文献
 [官方文档](https://developers.google.com/protocol-buffers/docs/proto3)
