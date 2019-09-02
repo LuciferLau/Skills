@@ -33,3 +33,10 @@ Regular expression	|正则表达式类
 > BSON：是一种类json的一种二进制形式的存储格式，简称Binary JSON，它和JSON一样，支持内嵌的文档对象和数组对象，但是BSON有JSON没有的一些数据类型，如Date和BinData类型。  
 
 ISODate()格林尼治时间GMT+0，Date()JS中的日期方法。  
+#### 对数据库的操作
+方法|介绍
+:-:|-
+use | 切换数据库，切换到不存在的数据库中并插入数据，相当于创建新库
+show | 显示所有数据库
+db.dropDatabase() | 删库
+
