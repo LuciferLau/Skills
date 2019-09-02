@@ -43,14 +43,10 @@ db.dropDatabase() | 删库
 方法|介绍
 :-|-
 show collection | 查看所有集合
-db.cerateCollection(name,options) |name：集合名称。options：(bool capped, bool autoIndexId, number size, numebr max)   
-1：创建固定大小集合；2：自动在_id字段创建索引；  
-3：为固定集合赋大小值；4：固定集合中文档最大数
+db.cerateCollection(name,options) |name：集合名称。options：(bool capped, bool autoIndexId, number size, numebr max)1：创建固定大小集合；2：自动在_id字段创建索引；3：为固定集合赋大小值；4：固定集合中文档最大数
 db.collection.insert(...) | 和数据库一样，可以通过插入数据自动创建集合
 db.collection.drop() | 删除集合
-db.collection.update(query, update, (upsert, multi, writeConcern)) | 更新集合，query是查询条件；update类似set子句；  
-后三个参数可选：upsert默认为false，不存在update的记录则不插入；  
-multi默认为false，只更新符合条件的第一条数据，否则更新全部；最后一个是抛出异常的级别
+db.collection.update(query, update, (upsert, multi, writeConcern)) | 更新集合，query是查询条件；update类似set子句；后三个参数可选：upsert默认为false，不存在update的记录则不插入；multi默认为false，只更新符合条件的第一条数据，否则更新全部；最后一个是抛出异常的级别
 db.collection.save(document, writeConcern) | 用传入文档替换已有文档
 db.collection.remove(query, justOne, writeConcern) | 删除文档，query是查询条件，justOne默认为false，和multi一个意思
 db.collection.find(query, projection) | 查询文档，query是查询条件，projection是指定返回的键
