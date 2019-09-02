@@ -29,14 +29,28 @@ repeated：表示这个字段可以为0或N个。
 message myMSG{
     required int32 id = 1;
     required string name = 2;
-    optional string email = 3; [defaukt = 0]
-    repeated int32 something = 4; 
+    optional string email = 3; [default = 0] //可在后面加上默认值
+    repeated int32 something = 4; //repeated的体现其实就是一个数组
 }
 ```
 > Required Is Forever You should be very careful about marking fields as required.   
 If at some point you wish to stop writing or sending a required field, it will be problematic to change the field to an optional field – old readers will consider messages without this field to be incomplete and may reject or drop them unintentionally.   
 You should consider writing application-specific custom validation routines for your buffers instead.   
-Some engineers at Google have come to the conclusion that using required does more harm than good; they prefer to use only optional and repeated. However,   
-this view is not universal.
-官方对于require修饰符的一些建议，大概意思就是慎用require，除非你能确保不修改这个字段，否则容易导致兼容性错误↑
-test
+Some engineers at Google have come to the conclusion that using required does more harm than good; they prefer to use only optional and repeated.   
+However,this view is not universal.
+官方对于require修饰符的一些建议，大意是慎用require，除非你能确保不修改这个字段，否则容易导致兼容性错误。
+#### 字段类型
+![proto](https://raw.githubusercontent.com/LuciferLau/Skills/master/pic/proto.png)
+### 3、其它用法
+> 不同类型的默认值(Default Values)
+> message的嵌套定义(Nested Types)
+> 使用message作为字段类型(Using Other Message Types)
+> 未知字段(Unknown Fields)
+> enum和map
+> Any和Oneof
+> package和service
+> 编译方法
+>> `protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR --go_out=DST_DIR --ruby_out=DST_DIR --objc_out=DST_DIR --csharp_out=DST_DIR path/to/file.proto
+`
+## 参考文献
+[官方文档](https://developers.google.com/protocol-buffers/docs/proto3)
