@@ -62,4 +62,4 @@ protoc --proto_path=src --cpp_out=build/gen src/foo.proto src/bar/baz.proto
 序列化和反序列化的高效都是protobuf讨喜的关键所在，那原理是为什么呢？
 > [冰霜之地 大神讲解](https://github.com/halfrost/Halfrost-Field/blob/master/contents/Protocol/Protocol-buffers-decode.md)
 ## 参考文献
-[官方文档](https://developers.google.com/protocol-buffers/docs/proto3)
+> [官方文档](https://developers.google.com/protocol-buffers/docs/proto3)
