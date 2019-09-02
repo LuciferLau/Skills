@@ -51,7 +51,7 @@ db.collection.save(document, writeConcern) | 用传入文档替换已有文档
 db.collection.remove(query, justOne, writeConcern) | 删除文档，query是查询条件，justOne默认为false，和multi一个意思
 db.collection.find(query, projection) | 查询文档，query是查询条件，projection是指定返回的键
 db.collection.find().pretty() | 格式化输出文档
-#### 关系运算\[less/greater than (equal)]
+#### 关系运算\[(less/greater than)(not)(equal)]
 操作|格式|MongoDB|RDBMS
 :-:|-|-|-
 等于	|{\<key>:\<value>}	|db.col.find({"by":"菜鸟教程"}).pretty()	|where by = '菜鸟教程'
