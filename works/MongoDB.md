@@ -30,13 +30,33 @@ Binary Data	|二进制数据。用于存储二进制数据。
 Code	|代码类型。用于在文档中存储 JavaScript 代码。
 Regular expression	|正则表达式类
 ### 常用方法
-> BSON：是一种类json的一种二进制形式的存储格式，简称Binary JSON，它和JSON一样，支持内嵌的文档对象和数组对象，但是BSON有JSON没有的一些数据类型，如Date和BinData类型。  
+> BSON：是一种类json的一种二进制形式的存储格式，简称Binary JSON，它和JSON一样，支持内嵌的文档对象和数组对象，但是BSON有JSON没有的一些数据类型，如Date和BinData类型。是MongoDB主要的数据类型。  
 
 ISODate()格林尼治时间GMT+0，Date()JS中的日期方法。  
 #### 对数据库的操作
 方法|介绍
 :-:|-
-use | 切换数据库，切换到不存在的数据库中并插入数据，相当于创建新库
-show | 显示所有数据库
+use db | 切换数据库，切换到不存在的数据库中并插入数据，相当于创建新库
+show db | 显示所有数据库
 db.dropDatabase() | 删库
-
+#### 对集合(表)的操作
+方法|介绍
+:-:|-
+show | 查看所有集合
+db.cerateCollection(name,options) |name：集合名称。options：(bool capped, bool autoIndexId, number size, numebr max)
+db.COLLECTION_NAME.insert(...) | 和数据库一样，可以通过插入数据自动创建COLLECTION_NAME这个集合
+db.COLLECTION_NAME.drop() | 删除集合
+db.COLLECTION_NAME.update(query, update, (upsert, multi, writeConcern)) | 更新集合，query是查询条件；update类似set子句；后三个参数可选：upsert默认为false，不存在update的记录则不插入；multi默认为false，只更新符合条件的第一条数据，否则更新全部；最后一个是抛出异常的级别
+db.COLLECTION_NAME.save(document, writeConcern) | 用传入文档替换已有文档
+db.COLLECTION_NAME.remove(query, justOne, writeConcern) | 删除文档，query是查询条件，justOne默认为false，和multi一个意思
+db.COLLECTION_NAME.find(query, projection) | 查询文档，query是查询条件，projection是指定返回的键
+db.COLLECTION_NAME.find().pretty() | 格式化输出文档
+#### 关系运算
+操作|格式|MongoDB|RDBMS
+:-:|-|-|-
+等于	{<key>:<value>}	db.col.find({"by":"菜鸟教程"}).pretty()	where by = '菜鸟教程'
+小于	{<key>:{$lt:<value>}}	db.col.find({"likes":{$lt:50}}).pretty()	where likes < 50
+小于或等于	{<key>:{$lte:<value>}}	db.col.find({"likes":{$lte:50}}).pretty()	where likes <= 50
+大于	{<key>:{$gt:<value>}}	db.col.find({"likes":{$gt:50}}).pretty()	where likes > 50
+大于或等于	{<key>:{$gte:<value>}}	db.col.find({"likes":{$gte:50}}).pretty()	where likes >= 50
+不等于	{<key>:{$ne:<value>}}	db.col.find({"likes":{$ne:50}}).pretty()	where likes != 50
