@@ -27,6 +27,8 @@ Symbol	|符号。该数据类型基本上等同于字符串类型，但不同的
 Date	|日期时间。用 UNIX 时间格式来存储当前日期或时间。你可以指定自己的日期时间：创建 Date 对象，传入年月日信息。
 Object ID	|对象 ID。用于创建文档的 ID。
 Binary Data	|二进制数据。用于存储二进制数据。
-Code	|代码类型。|用于在文档中存储 JavaScript 代码。
+Code	|代码类型。用于在文档中存储 JavaScript 代码。
 Regular expression	|正则表达式类
 ### 常用方法
+> 额外的一个知识点：BSON是一种类json的一种二进制形式的存储格式，简称Binary JSON，它和JSON一样，支持内嵌的文档对象和数组对象，但是BSON有JSON没有的一些数据类型，如Date和BinData类型。
+ISODate()格林尼治时间GMT+0，Date()JS中的日期方法。  
