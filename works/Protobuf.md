@@ -23,7 +23,7 @@ enum Foo {
 ```
 #### 字段修饰  
 required：表示这个字段有且只有1个。  
-optional：表示这个字段可以为0或1个。
+optional：表示这个字段可以为0或1个。  
 repeated：表示这个字段可以为0或N个。
 ```
 message myMSG{
