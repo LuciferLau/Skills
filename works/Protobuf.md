@@ -42,14 +42,14 @@ However,this view is not universal.
 #### 字段类型
 ![proto](https://raw.githubusercontent.com/LuciferLau/Skills/master/pic/proto.png)
 ### 3、其它用法
-> 不同类型的默认值(Default Values)
-> message的嵌套定义(Nested Types)
-> 使用message作为字段类型(Using Other Message Types)
-> 未知字段(Unknown Fields)
-> enum和map
-> Any和Oneof
-> package和service
-> 编译方法
+> 不同类型的默认值(Default Values)  
+> message的嵌套定义(Nested Types)  
+> 使用message作为字段类型(Using Other Message Types)  
+> 未知字段(Unknown Fields)  
+> enum和map  
+> Any和Oneof  
+> package和service  
+> 编译方法  
 >> `protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR --go_out=DST_DIR --ruby_out=DST_DIR --objc_out=DST_DIR --csharp_out=DST_DIR path/to/file.proto
 `
 ## 参考文献
