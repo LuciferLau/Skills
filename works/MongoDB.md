@@ -13,7 +13,7 @@ MongoDB 是一个介于关系数据库和非关系数据库之间的产品，是
 主键：primary key（primary key）  
 ### 数据类型
 Type | Description
-:-|-
+:-:|-
 String	字符串。|存储数据常用的数据类型。在 MongoDB 中，UTF-8 编码的字符串才是合法的。
 Integer	整型数值。|用于存储数值。根据你所采用的服务器，可分为 32 位或 64 位。
 Boolean	布尔值。|用于存储布尔值（真/假）。
