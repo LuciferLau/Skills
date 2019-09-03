@@ -104,4 +104,28 @@ expireAfterSeconds|	integer|	指定一个以秒为单位的数值，完成 TTL�
 v	|index version	|索引的版本号。默认的索引版本取决于mongod创建索引时运行的版本
 weights|	document	|索引权重值，数值在 1 到 99,999 之间，表示该索引相对于其他索引字段的得分权重
 default_language	|string	|对于文本索引，该参数决定了停用词及词干和词器的规则的列表。 默认为英语
-language_override	|string	|对于文本索引，该参数指定了包含在文档中的字段名，语言覆盖默认的language，默认值为 language.
+language_override	|string	|对于文本索引，该参数指定了包含在文档中的字段名，语言覆盖默认的language，默认值为 language
+
+### 高可用性，高并发性，持久化
+MongoDB复制，或者成为副本集，保证了高可用性。类似Redis的主从复制，主服务器负责处理客户端请求，从服务器定期获取主服务器的oplog，并对自己的数据副本进行这些操作，保证数据的一致性。可以一主多从，一主一从；命令以rs.xxx()开头。  
+
+MongoDB分片，实现负载均衡，保证了高并发性。类似Redis的cluster集群，在处理海量数据时，在多台机器上面分割数据。由3部分组成，shard用于存储实际数据块；config server存储集群元数据（clustermetadata）；query router前端路由让外部看起来在操作单一数据库。启动shard server，启动config server，启动route server，最后配置sharding，集群就可以运行了。  
+
+mongodump命令将数据导出到指定目录，mongorestore将备份的数据恢复到数据库，实现了简单的持久化。  
+
+MongoDB监控,类似Redis中的monitor，定期获取db的运行状态并输出，使用mongotop命令。  
+（Redis中的发布订阅，哨兵机制，raft的选举机制还没有体现出来，可能在源码实现里才能看见）  
+### 高级特性
+Name | Function/Description
+-|-
+关系 | 分为嵌入式关系(表中套表)，引用式关系(表中数据是别的表的ID)
+引用 | 分为DBRefs和手引用
+覆盖索引查询 | 所有的查询字段是索引的一部分；所有的查询返回字段在同一个索引中
+查询分析 | explain()提供了查询信息，使用索引及查询统计等利于对索引的优化的信息；hint()强制使用某个索引
+原子操作 | 一步到位的操作，防止脏读幻读($set, $inc, $push, $pop, $rename ...)
+索引限制 | 集合中索引不能超过64个;索引名不能超过128个字符;复合索引最多有31个字段
+Map Reduce | 将数据分解(map)再合成(reduce)，db.collection.mapReduce()
+全文检索 | (MySQL的fulltext索引?)2.6版本开始支持，db.adminCommand({setParameter:true,textSearchEnabled:true})
+正则表达式 | 用到再说吧。。。
+GrdiFS | 因为BSON文件限制是16M，大于16M的就用GridFS来存储
+固定集合 | 类似环形队列，插入查询极快，用于缓存少量文档或存储日志信息
