@@ -50,19 +50,19 @@ skynet.time() | 通过 starttime 和 now 计算出当前 UTC 时间（秒）。
 
 #### 消息处理
     1.不需响应的消息
-send(addr, type, ...) --发送未打包的消息，函数自动打包...参数列表
-rawsend(addr, tpye, msg, sz) --发送打包好的消息
-redirect(dst, src, type, session, msg, sz) --伪造其它服务地址发送信息，可以用于白盒测试？
+*send(addr, type, ...)* --发送未打包的消息，函数自动打包...参数列表  
+*rawsend(addr, tpye, msg, sz)* --发送打包好的消息  
+*redirect(dst, src, type, session, msg, sz)* --伪造其它服务地址发送信息，可以用于白盒测试？
 
     2.必须响应的消息
-call(addr, type, ...) --发送未打包的消息并等待响应，函数自动打包...参数列表并解包  
-rawcall(addr, tpye, msg, sz) --发送打包好的消息，需要自行解包
-session --保证本服务中发出的消息是唯一的
+*call(addr, type, ...)* --发送未打包的消息并等待响应，函数自动打包...参数列表并解包   
+*rawcall(addr, tpye, msg, sz)* --发送打包好的消息，需要自行解包  
+*session字段* --保证本服务中发出的消息是唯一的
 
     3.响应消息
-ret --用于返回服务处理消息的结果
-retpack(...) --将消息用pack打包后再调用ret
-response --不想接受请求和响应请求再同一个协程中完成时，用它代替ret
+*ret()* --用于返回服务处理消息的结果
+*retpack(...)* --将消息用pack打包后再调用ret
+*response()* --不想接受请求和响应请求再同一个协程中完成时，用它代替ret
 
 #### 消息队列
 > 如果某个服务中有阻塞API，它挂起后仍能处理别的消息，可能得到未预计的结果，解决方法就是消息队列。  
@@ -131,9 +131,5 @@ socket.warning(id, callback) | 当 id 对应的 socket 上待发的数据超过 
 使用云风的[pbc](https://github.com/cloudwu/pbc)，对protobuf进行了一定封装使其更加方便。
 注册.proto文件后，直接使用encode/decode方法进行序列化/反序列化。
 
-## Skynet框架
-← agent → ← ← ← ← ← ←   
-↓         ↑↓        ↑  
-client → gate ←→ watchdog ← main
 ## 参考文献
 [Skynet——Github](https://github.com/cloudwu/skynet/wiki)
