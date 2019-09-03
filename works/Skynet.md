@@ -15,18 +15,15 @@ preload会预加载服务对应的函数，环境变量也被加载进去，且�
 服务分为普通服务和全局唯一服务。  
 ### 分类
 普通服务通过：*newservice(servicename)创建  
-
 唯一服务通过：*uniqueservice(true,servicename)创建，如果带了true参数表示服务在所有节点唯一，否则在本节点唯一
-
 查询服务使用：*queryservice(true,servicename)true含义同上   
-
 ### 别名
 别名：本地别名以'.'开头，如.alias，全局别名不能以点开头，通过:*name("(.)alias",servicename)设置  
-
 注意杀死别名服务后，本地别名变为nil，但全局的别名依然存在，使用它会导致不可预知的错误。  
 还有，注意区分全局唯一服务名和全局别名。
 ### 调度
-> 因为这一块底层封装了，所以快速浏览一遍，暂不深究
+> 因为这一块底层封装了，所以快速浏览一遍，暂不深究  
+
 Name | Description
 :-:|-
 skynet.sleep(time) | 让当前的任务等待 time * 0.01s。
