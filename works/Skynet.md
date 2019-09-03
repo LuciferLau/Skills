@@ -111,3 +111,29 @@ socket.start(id , accept) | accept 是一个函数。每当一个监听的 id �
 socket.start(id) | 任何一个服务只有在调用 socket.start(id) 之后，才可以读到这个 socket 上的数据。向一个 socket id 写数据也需要先调用 start 。socket 的 id 对于整个 skynet 节点都是公开的。也就是说，你可以把 id 这个数字通过消息发送给其它服务，其他服务也可以去操作它。skynet 框架是根据调用 start 这个api 的位置来决定把对应 socket 上的数据转发到哪里去的。
 socket.abandon(id) | 清除 socket id 在本服务内的数据结构，但并不关闭这个 socket 。这可以用于你把 id 发送给其它服务，以转交 socket 的控制权。
 socket.warning(id, callback) | 当 id 对应的 socket 上待发的数据超过 1M 字节后，系统将回调 callback 以示警告。function callback(id, size) 回调函数接收两个参数 id 和 size ，size 的单位是 K 。如果你不设回调，那么将每增加 64K 利用 skynet.error 写一行错误信息。
+
+## 框架内一些server
+> 水平不足，先不深入了解这些底层实现。
+### DNS Server
+用域名获取IP时，底层使用系统调用 getaddrinfo()可能导致阻塞。
+### Login Server
+其实就是通过各种加密算法对账号密码进行处理。
+### Gateway Server
+控制客户端连接数，接受socket和lua的消息。
+#### Agent服务
+一般网关服务登陆完毕后，会由agent服务处理客户端请求（登入登出）
+### Msg Server
+接受客户请求的数据包，并给出回应。
+### HTTP Server
+服务器可以像web server一样接受并响应HTTP请求，实现某些功能。
+
+## 使用Protobuf服务
+使用云风的[pbc](https://github.com/cloudwu/pbc)，对protobuf进行了一定封装使其更加方便。
+注册.proto文件后，直接使用encode/decode方法进行序列化/反序列化。
+
+## Skynet框架
+ ← agent →  ← ← ← ← ←   
+ ↓        ↑↓         ↑  
+client → gate ←→ watchdog ← main
+## 参考文献
+[Skynet——Github](https://github.com/cloudwu/skynet/wiki)
