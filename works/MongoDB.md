@@ -92,6 +92,7 @@ dropIndexes() | 删除集合所有索引 | db.collection.dropIndexes()
 dropIndex() | 删除集合中某个索引 | db.collection.dropIndex(INDEX_NAME)
 
 >下面是索引的可选参数列表：
+
 Parameter| Type | Description
 -|-|-
 background	|Boolean|	建索引过程会阻塞其它数据库操作，background可指定以后台方式创建索引，即增加 "background" 可选参数。 "background" 默认值为false
