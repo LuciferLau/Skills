@@ -14,11 +14,11 @@ preload会预加载服务对应的函数，环境变量也被加载进去，且�
 环境变量设置完成后，当前节点上所有服务都可以访问到，即使服务退出了，所以要慎用。  
 服务分为普通服务和全局唯一服务。  
 ### 分类
-普通服务通过：*newservice(servicename)*创建  
+普通服务通过：*newservice(servicename)* 创建  
 
-唯一服务通过：*uniqueservice(true,servicename)*创建，如果带了true参数表示服务在所有节点唯一，否则在本节点唯一  
+唯一服务通过：*uniqueservice(true,servicename)* 创建，如果带了true参数表示服务在所有节点唯一，否则在本节点唯一  
 
-查询服务使用：*queryservice(true,servicename)*true含义同上   
+查询服务使用：*queryservice(true,servicename)* true含义同上   
 
 ### 别名
 别名：本地别名以'.'开头，如.alias，全局别名不能以点开头，通过:*name("(.)alias",servicename)设置  
