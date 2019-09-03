@@ -133,3 +133,4 @@ socket.warning(id, callback) | 当 id 对应的 socket 上待发的数据超过 
 
 ## 参考文献
 [Skynet——Github](https://github.com/cloudwu/skynet/wiki)
+[Skynet源码赏析——DirectX_Fan](https://note.youdao.com/ynoteshare1/index.html?id=9d2b8a03fdd9cd4947ca4128d30af420&type=note#/)
