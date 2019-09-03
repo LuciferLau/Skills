@@ -74,4 +74,14 @@ Object id	|7	 |Timestamp	|17
 Boolean	|8	 |64-bit integer|	18	 
 Date	|9	 |Min key	|255	(Query with -1.)
 Null	|10	 |Max key	|127
+#### 查询优化的方法
+Name| Usage | Example
+-|-|-
+limit() | 读取指定数量的数据 |db.collection.find().limit(num)
+skip() | 跳过指定数量的数据 | db.collection.find().limit(num1).skip(num2)
+sort() | 对某个key排序，1为升序，1为降序 | db.collection.find().sort({KEY:1})
+aggregate() | 聚合，用于处理数据，类似count(\*) | db.collection.aggregate(OPT)
+聚合具体使用方法参考 | > [](https://www.jianshu.com/p/72fc4409936c)
+##### 索引 Index
+createIndex() | 创建索引，3.0.0前叫ensureIndex()，1表示按升序创建索引，-1表示降序 | db.col.createIndex({"title":1},{background:true})
 
