@@ -132,8 +132,8 @@ socket.warning(id, callback) | 当 id 对应的 socket 上待发的数据超过 
 注册.proto文件后，直接使用encode/decode方法进行序列化/反序列化。
 
 ## Skynet框架
- ← agent →  ← ← ← ← ←   
- ↓        ↑↓         ↑  
+← agent → ← ← ← ← ← ←   
+↓         ↑↓        ↑  
 client → gate ←→ watchdog ← main
 ## 参考文献
 [Skynet——Github](https://github.com/cloudwu/skynet/wiki)
