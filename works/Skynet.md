@@ -85,3 +85,29 @@ forward_type和start类似，前者还需要一张消息映射转换表，其它
 
 ### 节点间消息通信
 前面讲了单进程内的服务通信，不同skynet进程间也可以通信，方法有组播和广播。
+
+#### 组播 multicast
+就是类似发布与订阅系统，在创建了一个频道后，向里面发送消息，订阅了这个频道的人都能收到这个消息。  
+在游戏中，管理员给全体用户或者部分用户发送邮件的时候能用上？  
+单节点情况下，组播就是传C结构体指针；多节点情况下，将整个数据包传过去并让其它节点中的接受者传递这个C结构体指针。
+
+#### 套接字 SOCKET
+> 项目也有封装，大体浏览一遍了解
+
+Name | Description
+:-:|-
+socket.open(address, port) | 建立一个 TCP 连接。返回一个数字 id，底层使用linux socket api 的connect。
+socket.close(id) | 关闭一个连接，这个 API 有可能阻塞住执行流。因为如果有其它 coroutine正在阻塞读这个 id 对应的连接，会先驱使读操作结束，close 操作才返回。
+socket.close_fd(id) | 在极其罕见的情况下，需要粗暴的直接关闭某个连接，而避免 socket.close 的阻塞等待流程，可以使用它。
+socket.shutdown(id) | 强行关闭一个连接。和 close 不同的是，它不会等待可能存在的其它 coroutine 的读操作。一般不建议使用这个API，但如果你需要在 \_\_gc 元方法中关闭连接的话，shutdown 是一个比 close 更好的选择（因为在 gc 过程中无法切换 coroutine）与close_fd类似。
+socket.read(id, sz) | 从一个 socket 上读 sz 指定的字节数。如果读到了指定长度的字符串，它把这个字符串返回;如果连接断开导致字节数不够，将返回一个 false 加上读到的字符串;如果 sz 为 nil ，则返回尽可能多的字节数，但至少读一个字节（若无新数据，会阻塞）。
+socket.readall(id) | 从一个 socket 上读所有的数据，直到 socket 主动断开，或在其它 coroutine 用 socket.close 关闭它。
+socket.readline(id, sep) | 从一个 socket 上读一行数据。sep 指行分割符。默认的 sep 为 "\n"。读到的字符串是不包含这个分割符的。如果另外一端就关闭了，那么这个时候会返回一个nil，如果buffer中有未读数据则作为第二个返回值返回。
+socket.block(id) | 等待一个 socket 可读。
+socket.write(id, str) | 把一个字符串置入正常的写队列，skynet 框架会在 socket 可写时发送它。
+socket.lwrite(id, str) | 把字符串写入低优先级队列。如果正常的写队列还有写操作未完成时，低优先级队列上的数据永远不会被发出。只有在正常写队列为空时，才会处理低优先级队列。但是，每次写的字符串都可以看成原子操作。不会只发送一半，然后转去发送正常写队列的数据。
+socket.listen(address, port, backlog) |监听一个端口，返回一个 id ，供 start 使用。
+socket.start(id , accept) | accept 是一个函数。每当一个监听的 id 对应的 socket 上有连接接入的时候，都会调用 accept 函数。这个函数会得到接入连接的 id 以及 ip 地址。你可以做后续操作。每当 accept 函数获得一个新的 socket id 后，并不会立即收到这个 socket 上的数据。这是因为，我们有时会希望把这个 socket 的操作权转让给别的服务去处理。accept(id, addr)
+socket.start(id) | 任何一个服务只有在调用 socket.start(id) 之后，才可以读到这个 socket 上的数据。向一个 socket id 写数据也需要先调用 start 。socket 的 id 对于整个 skynet 节点都是公开的。也就是说，你可以把 id 这个数字通过消息发送给其它服务，其他服务也可以去操作它。skynet 框架是根据调用 start 这个api 的位置来决定把对应 socket 上的数据转发到哪里去的。
+socket.abandon(id) | 清除 socket id 在本服务内的数据结构，但并不关闭这个 socket 。这可以用于你把 id 发送给其它服务，以转交 socket 的控制权。
+socket.warning(id, callback) | 当 id 对应的 socket 上待发的数据超过 1M 字节后，系统将回调 callback 以示警告。function callback(id, size) 回调函数接收两个参数 id 和 size ，size 的单位是 K 。如果你不设回调，那么将每增加 64K 利用 skynet.error 写一行错误信息。
