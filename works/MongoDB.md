@@ -41,7 +41,7 @@ show db | 显示所有数据库
 db.dropDatabase() | 删库
 #### 对集合(表)的操作
 方法|介绍
-:-|-
+-|-
 show collection | 查看所有集合
 db.cerateCollection(name,options) |name：集合名称。options：(bool capped, bool autoIndexId, number size, numebr max)1：创建固定大小集合；2：自动在_id字段创建索引；3：为固定集合赋大小值；4：固定集合中文档最大数
 db.collection.insert(...) | 和数据库一样，可以通过插入数据自动创建集合
@@ -64,7 +64,7 @@ db.collection.find().pretty() | 格式化输出文档
 或 $or:| $or:\[{key1: value1}, {key2:value2}]|...|where A OR B
 #### $type操作符用于匹配数据类型
 Type| enum|Type| enum
--|-|-|-
+:-:|-|-|-
 Double|	1	| Regular Expression	|11	 
 String|	2	 |JavaScript	|13	 
 Object|	3	 |Symbol	|14	 
@@ -94,7 +94,7 @@ dropIndex() | 删除集合中某个索引 | db.collection.dropIndex(INDEX_NAME)
 >下面是索引的可选参数列表：
 
 Parameter| Type | Description
--|-|-
+:-:|-|-
 background	|Boolean|	建索引过程会阻塞其它数据库操作，background可指定以后台方式创建索引，即增加 "background" 可选参数。 "background" 默认值为false
 unique	|Boolean|	建立的索引是否唯一。指定为true创建唯一索引。默认值为false.
 name	|string	|索引的名称。如果未指定，MongoDB的通过连接索引的字段名和排序顺序生成一个索引名称
@@ -117,7 +117,7 @@ MongoDB监控,类似Redis中的monitor，定期获取db的运行状态并输出�
 （Redis中的发布订阅，哨兵机制，raft的选举机制还没有体现出来，可能在源码实现里才能看见）  
 ### 高级特性
 Name | Function/Description
--|-
+:-:|-
 关系 | 分为嵌入式关系(表中套表)，引用式关系(表中数据是别的表的ID)
 引用 | 分为DBRefs和手引用
 覆盖索引查询 | 所有的查询字段是索引的一部分；所有的查询返回字段在同一个索引中
