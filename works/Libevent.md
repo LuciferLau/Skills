@@ -76,7 +76,7 @@ int check_version_match(void) //判断当前运行版本号是否为编译时版
 `在释放先前分配的event_base等结构体时，内存并不能完全释放干净，可能会有部分全局结构体遗留，通常这无关紧要，但这会导致部分监察工具觉得程序出现了内存泄漏，这时候可以调用：void libevent_global_shutdown(void)，这个函数不会帮你释放你先前创造的结构体，只是起到回收垃圾，即那些残留结构体的作用，具体可以参考event2/event.h中定义与.c中的实现`
 #### 锁和线程：理解pthread即可
 ---
-### R2: Getting an event_base (使用event_base)
+### R2: Getting an event_base (**使用event_base,重要基础)
 
 
 ### R3: Running an event loop (使用事件循环)
