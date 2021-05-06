@@ -41,7 +41,20 @@ libevent_openssl|这个库为使用 bufferevent 和 OpenSSL 进行加密的通�
 
 ②版本号的坑：libevent版本号会在编译时确定宏定义的，但如果使用动态库，就不能保证接口返回的版本号了。
 
-`#define LIBEVENT_VERSION_NUMBER ~= ev_uint32_t event_get_version_number(void)`
+```
+#define LIBEVENT_VERSION_NUMBER ~= ev_uint32_t event_get_version_number(void)
+int check_version_match(void) //判断当前运行版本号是否为编译时版本号
+{
+    ev_uint32_t v_compile, v_run;
+    v_compile = LIBEVENT_VERSION_NUMBER;
+    v_run = event_get_version_number();
+    if ((v_compile & 0xffff0000) != (v_run & 0xffff0000)) {
+        printf("运行时版本号(%s)与编译时版本号(%s)不同.\n", event_get_version(), LIBEVENT_VERSION);
+        return -1;
+    }
+    return 0;
+}
+```
 
 ---
 ### R1: Setting up the Libevent library (设置libevent)
@@ -59,7 +72,7 @@ libevent_openssl|这个库为使用 bufferevent 和 OpenSSL 进行加密的通�
 #define _EVENT_LOG_ERR   EVENT_LOG_ERR
 ```
 #### 错误处理：类似tryCatch机制，暂略
-#### 内存管理：重载malloc、realloc、free，优化用，暂略
+#### 内存管理：重载malloc、realloc、free，优化用，水平不足暂略
 #### 锁和线程：理解pthread即可
 ---
 ### R2: Getting an event_base (使用event_base)
