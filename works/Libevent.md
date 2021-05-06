@@ -45,6 +45,14 @@ libevent_openssl|这个库为使用 bufferevent 和 OpenSSL 进行加密的通�
 
 ---
 ### R1: Setting up the Libevent library (设置libevent)
+#### 日志相关：
+日志等级，分四级
+```
+#define EVENT_LOG_DEBUG 0
+#define EVENT_LOG_MSG   1
+#define EVENT_LOG_WARN  2
+#define EVENT_LOG_ERR   3
+```
 
 ### R2: Getting an event_base (使用event_base)
 ### R3: Running an event loop (使用事件循环)
