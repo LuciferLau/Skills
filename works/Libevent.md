@@ -92,7 +92,7 @@ int event_config_avoid_method(struct event_config *cfg, const char *method);
 不想用它就把它avoid掉吧，如果想知道什么后端可以用，就使用：
 const char **event_get_supported_methods(void);
 函数返回一个指针，指向 libevent 支持的方法名字数组，最后一个元素为NULL。
-
+----------------------------------------------------------------------------------------------------
 你可以选择你想要的特性：
 enum event_method_feature {
     EV_FEATURE_ET = 0x01, //支持边缘触发
@@ -103,7 +103,7 @@ int event_config_require_features(struct event_config *cfg, enum event_method_fe
 同样的，想知道当前的base是用什么特性，就使用：
 enum event_method_feature event_base_get_features(const struct event_base *base);
 返回值和枚举做‘&’操作，就能判断是否为当前特性。
-
+----------------------------------------------------------------------------------------------------
 你可以让libevent根据你的喜好工作：
 enum event_base_config_flag {
     EVENT_BASE_FLAG_NOLOCK = 0x01,              //不给用锁，线程不安全
@@ -114,7 +114,7 @@ enum event_base_config_flag {
     EVENT_BASE_FLAG_PRECISE_TIMER = 0x20        //使用更慢但可能更精确的计时机制，默认是使用最快但不那么精确的
 };
 int event_config_set_flag(struct event_config *cfg, enum event_base_config_flag flag);
-
+----------------------------------------------------------------------------------------------------
 用配置虽然很爽，但你的OS不一定支持这些配置，如果不能满足你的要求，event_base_new_with_config只能返回NULL。
 ```
 
