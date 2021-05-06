@@ -7,7 +7,7 @@
 
 ---
 ## 接下来会跟着官方文档步步走
-> [官方文档传送门]http://www.wangafu.net/~nickm/libevent-book/
+> [官方文档传送门]http://www.wangafu.net/~nickm/libevent-book/ 当前笔记对应文档版本：Last updated 2012-01-31 09:28:39 EDT
 > 
 > 当前使用libevent版本libevent-2.1.12-stable:Released 2020-07-05.
 ### R0: Preliminaries | 第一步，万丈高楼平地起
