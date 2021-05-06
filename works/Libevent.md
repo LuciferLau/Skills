@@ -35,7 +35,8 @@ libevent|这个库因为历史原因而存在，它包含 libevent_core 和 libe
 libevent_pthreads|添加基于 pthread 可移植线程库的线程和锁定实现。它独立于libevent_core，这样程序使用 libevent 时就不需要链接到 pthread，除非是以多线程方式使用 libevent。
 libevent_openssl|这个库为使用 bufferevent 和 OpenSSL 进行加密的通信提供支持。它独立于 libevent_core，这样程序使用 libevent 时就不需要链接到 OpenSSL，除非是进行加密通信。
 #### 关于版本：
-1.3之前是BUG版本，1.4之前只有一个libevent库，2.0之前线程不安全（无lock，condition机制），新的头文件都在event2文件夹中，为了兼容旧的头文件，开发时尽可能不要用到旧的玩意，毕竟没有人维护是最大的问题。版本号的坑：libevent版本号会在编译时确定宏定义的，但如果使用动态库，就不能保证接口返回的版本号了。
+①1.3之前是BUG版本，1.4之前只有一个libevent库，2.0之前线程不安全（无lock，condition机制），新的头文件都在event2文件夹中，为了兼容旧的头文件，开发时尽可能不要用到旧的玩意，毕竟没有人维护是最大的问题。
+②版本号的坑：libevent版本号会在编译时确定宏定义的，但如果使用动态库，就不能保证接口返回的版本号了。
 `#define LIBEVENT_VERSION_NUMBER ~= ev_uint32_t event_get_version_number(void)`
 ### R1: Setting up the Libevent library (设置libevent)
 ### R2: Getting an event_base (使用event_base)
