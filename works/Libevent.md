@@ -76,8 +76,47 @@ int check_version_match(void) //判断当前运行版本号是否为编译时版
 `在释放先前分配的event_base等结构体时，内存并不能完全释放干净，可能会有部分全局结构体遗留，通常这无关紧要，但这会导致部分监察工具觉得程序出现了内存泄漏，这时候可以调用：void libevent_global_shutdown(void)，这个函数不会帮你释放你先前创造的结构体，只是起到回收垃圾，即那些残留结构体的作用，具体可以参考event2/event.h中定义与.c中的实现`
 #### 锁和线程：理解pthread即可
 ---
-### R2: Getting an event_base (**使用event_base,重要基础)
+### R2: Getting an event_base (使用event_base,重要基础)
+当然，可以用简单的方式new一个最普通的base出来；
+`struct event_base *event_base_new(void);`
+也可以使用配置文件new一个你想要的base出来；
+`struct event_base *event_base_new_with_config(const struct event_config *cfg);`
+这个配置创建也有它的一套讲究，首先是先创建一个空的config；
+`struct event_config *event_config_new(void);`
+当然也有对应的析构函数;
+`void event_config_free(struct event_config *cfg);`
+然后就是配置这个配置了，说起来怪怪的🙇‍♂️
+```
+你可以选择你不想要的后端:(select, poll, epoll, kqueue, devpoll, evport, win32)
+int event_config_avoid_method(struct event_config *cfg, const char *method);
+不想用它就把它avoid掉吧，如果想知道什么后端可以用，就使用：
+const char **event_get_supported_methods(void);
+函数返回一个指针，指向 libevent 支持的方法名字数组，最后一个元素为NULL。
 
+你可以选择你想要的特性：
+enum event_method_feature {
+    EV_FEATURE_ET = 0x01, //支持边缘触发
+    EV_FEATURE_O1 = 0x02, //O(1)完成增删查操作
+    EV_FEATURE_FDS = 0x04,//支持多句柄控制
+};
+int event_config_require_features(struct event_config *cfg, enum event_method_feature feature);
+同样的，想知道当前的base是用什么特性，就使用：
+enum event_method_feature event_base_get_features(const struct event_base *base);
+返回值和枚举做‘&’操作，就能判断是否为当前特性。
+
+你可以让libevent根据你的喜好工作：
+enum event_base_config_flag {
+    EVENT_BASE_FLAG_NOLOCK = 0x01,              //不给用锁，线程不安全
+    EVENT_BASE_FLAG_IGNORE_ENV = 0x02,          //不检查EVENT_*环境，更难调试
+    EVENT_BASE_FLAG_STARTUP_IOCP = 0x04,        //仅Windows
+    EVENT_BASE_FLAG_NO_CACHE_TIME = 0x08,       //不要缓存时间，每次超时回调时再获取时间检测，更耗时
+    EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST = 0x10,//若使用epoll，可选更快的epoll-changeList，但会有小bug
+    EVENT_BASE_FLAG_PRECISE_TIMER = 0x20        //使用更慢但可能更精确的计时机制，默认是使用最快但不那么精确的
+};
+int event_config_set_flag(struct event_config *cfg, enum event_base_config_flag flag);
+
+用配置虽然很爽，但你的OS不一定支持这些配置，如果不能满足你的要求，event_base_new_with_config只能返回NULL。
+```
 
 ### R3: Running an event loop (使用事件循环)
 ### R4: Working with events (与事件一起工作)
