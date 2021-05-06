@@ -38,6 +38,7 @@ libevent_openssl|这个库为使用 bufferevent 和 OpenSSL 进行加密的通�
 ①1.3之前是BUG版本，1.4之前只有一个libevent库，2.0之前线程不安全（无lock，condition机制），新的头文件都在event2文件夹中，为了兼容旧的头文件，开发时尽可能不要用到旧的玩意，毕竟没有人维护是最大的问题。
 
 ②版本号的坑：libevent版本号会在编译时确定宏定义的，但如果使用动态库，就不能保证接口返回的版本号了。
+
 `#define LIBEVENT_VERSION_NUMBER ~= ev_uint32_t event_get_version_number(void)`
 
 ---
