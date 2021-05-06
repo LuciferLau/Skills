@@ -10,3 +10,14 @@
 > [官方文档传送门]http://www.wangafu.net/~nickm/libevent-book/
 > 
 > 当前使用libevent版本libevent-2.1.12-stable:Released 2020-07-05.
+## R0: Preliminaries
+## R1: Setting up the Libevent library
+## R2: Getting an event_base
+## R3: Running an event loop
+## R4: Working with events
+## R5: Utility and portability functions
+## R6: Bufferevents: concepts and basics
+## R6a: Bufferevents: advanced topics
+## R7: Evbuffers: utility functionality for buffered IO
+## R8: Connection listeners: accepting TCP connections
+## R9: DNS for Libevent
