@@ -30,6 +30,8 @@ ibevent_extra|定义了程序可能需要，也可能不需要的协议特定功
 libevent|这个库因为历史原因而存在，它包含 libevent_core 和 libevent_extra 的内容。不应该使用这个库，未来版本的 libevent 可能去掉这个库。
 ---
 某些平台上可能安装下列库
+库名|描述
+--|:--:
 libevent_pthreads|添加基于 pthread 可移植线程库的线程和锁定实现。它独立于libevent_core，这样程序使用 libevent 时就不需要链接到 pthread，除非是以多线程方式使用 libevent。
 libevent_openssl|这个库为使用 bufferevent 和 OpenSSL 进行加密的通信提供支持。它独立于 libevent_core，这样程序使用 libevent 时就不需要链接到 OpenSSL，除非是进行加密通信。
 ### R1: Setting up the Libevent library (设置libevent)
