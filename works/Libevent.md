@@ -445,10 +445,10 @@ int evutil_sockaddr_cmp(const struct sockaddr \*sa1, const struct sockaddr \*sa2
 >
 > 与通常的事件在底层传输端口已经就绪，可以读取或者写入的时候执行回调不同的是，bufferevent 在读取或者写入了足够量的数据之后调用用户提供的回调。
 + bufferevent分类：
- - socket-based bufferevents 基于套接字的 bufferevent : 使用event_\*接口作为后端，通过底层流式套接字发送或者接收数据的bufferevent。
- + asynchronous-IO bufferevents 异步 IO bufferevent ：使用Windows IOCP接口，通过底层流式套接字发送或者接收数据的bufferevent（试验特性！仅用于 Windows）
- - filtering bufferevents 过滤型 bufferevent ：将数据传输到底层bufferevent对象之前，处理输入或者输出数据的bufferevent：比如说，为了压缩或者转换数据。
- + paired bufferevents 成对的 bufferevent : 相互传输数据的两个bufferevent。
+   - socket-based bufferevents 基于套接字的 bufferevent : 使用event_\*接口作为后端，通过底层流式套接字发送或者接收数据的bufferevent。
+   - asynchronous-IO bufferevents 异步 IO bufferevent ：使用Windows IOCP接口，通过底层流式套接字发送或者接收数据的bufferevent（试验特性！仅用于 Windows）
+   - filtering bufferevents 过滤型 bufferevent ：将数据传输到底层bufferevent对象之前，处理输入或者输出数据的bufferevent：比如说，为了压缩或者转换数据。
+   - paired bufferevents 成对的 bufferevent : 相互传输数据的两个bufferevent。
 
 ### R7: Bufferevents: advanced topics (*bufferevent*进阶使用)
 ### R8: Evbuffers: utility functionality for buffered IO (*evbuffer*:缓存IO的高效且实用的方式)
