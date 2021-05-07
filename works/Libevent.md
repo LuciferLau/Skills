@@ -445,8 +445,14 @@ int evutil_sockaddr_cmp(const struct sockaddr \*sa1, const struct sockaddr \*sa2
 >
 > 与通常的事件在底层传输端口已经就绪，可以读取或者写入的时候执行回调不同的是，bufferevent 在读取或者写入了足够量的数据之后调用用户提供的回调。
 + bufferevent分类：
-++ socket-based bufferevents
-++ A bufferevent that sends and receives data from an underlying stream socket, using the event_* interface as its backend.
+
+
+
++ socket-based bufferevents
+
+
+
++ A bufferevent that sends and receives data from an underlying stream socket, using the event_* interface as its backend.
 
 asynchronous-IO bufferevents
 A bufferevent that uses the Windows IOCP interface to send and receive data to an underlying stream socket. (Windows only; experimental.)
