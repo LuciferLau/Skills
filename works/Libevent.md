@@ -318,7 +318,7 @@ void main_loop(evutil_socket_t fd1, evutil_socket_t fd2)
 
 而EV_PERSIST的设置，表示了事件可以多次触发，多次激活->回调->未决；而想让它终止下来，则需要对其调用 *event_del()* 。
 
-PS:如果想要将自己作为参数传入回调，可以使用 `void *event_self_cbarg();`, 不可直接传入自己，因为自己此刻还没初始化。
+PS:如果想要将自己作为参数传入回调，可以使用 `void *event_self_cbarg();` 不可直接传入自己，因为自己此刻还没初始化(2.1.1-alpha新增)。
 
 3️⃣:关于触发条件
 
@@ -369,6 +369,7 @@ struct event_base \*event_get_base(const struct event \*ev); | \ | \ | 返回事
 short event_get_events(const struct event \*ev); | \ | \ | 返回事件配置的条件
 event_callback_fn event_get_callback(const struct event \*ev); | \ | \ | 返回事件的回调函数
 void \*event_get_callback_arg(const struct event \*ev); | \ | \ | 返回事件回调函数及其参数指针
+void event_get_assignment(const struct event \*event, struct event_base \*\*base_out, evutil_socket_t \*fd_out, short \*events_out, event_callback_fn \*callback_out, void \*\*arg_out); | \ | \ | 将对应参数赋予#1的event中
 
 ### R5: Utility and portability functions (扩展和可移植函数)
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
