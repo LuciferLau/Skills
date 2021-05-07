@@ -244,6 +244,7 @@ int event_base_update_cache_time(struct event_base *base); //2.1.1-alpha新增�
 如果想获得base里面所有的事件及其状态，可以用它写进文件里；
 
 `void event_base_dump_events(struct event_base *base, FILE *f);`
+
 ---
 ### R4: Working with events (与事件一起工作🌟)
 
