@@ -245,9 +245,19 @@ int event_base_update_cache_time(struct event_base *base); //2.1.1-alpha新增�
 
 `void event_base_dump_events(struct event_base *base, FILE *f);`
 
+☢️新特性:可以通过类似foreach的方法遍历base里面绑定的事件，但千万不能进行增删改操作！
+
+`int event_base_foreach_event(struct event_base *base, event_base_foreach_event_cb fn, void *arg); //2.1.2-alpha新增`
+
+void \*arg 作为callback的参数传入，且callback函数必须返回0，才能继续让迭代器往下走，否则迭代器停止，回调函数的返回值也就是 event_base_foreach_event() 的返回值。
+
+`typedef int (*event_base_foreach_event_cb)(const struct event_base *, const struct event *, void *);`
+
+这个操作会给当前的event_base上锁，其他线程可能进行的某些有益操作可能会被拒绝，所以确保foreach里面callback不要做太多事，占用这个event_base太久。
+
 ---
 ### R4: Working with events (与事件一起工作🌟)
-
+事件是libevent的基本操作单元
 
 ### R5: Utility and portability functions (扩展和可移植函数)
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
