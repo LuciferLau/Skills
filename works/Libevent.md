@@ -441,6 +441,9 @@ int evutil_sockaddr_cmp(const struct sockaddr \*sa1, const struct sockaddr \*sa2
 
 ---
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础🌟)
+> bufferevent由一个底层的传输端口（如套接字），一个读取缓冲区和一个写入缓冲区组成。(缓存I/O)
+> 与通常的事件在底层传输端口已经就绪，可以读取或者写入的时候执行回调不同的是，bufferevent 在读取或者写入了足够量的数据之后调用用户提供的回调。
+
 ### R7: Bufferevents: advanced topics (*bufferevent*进阶使用)
 ### R8: Evbuffers: utility functionality for buffered IO (*evbuffer*:缓存IO的高效且实用的方式)
 ### R9: Connection listeners: accepting TCP connections (监听并接受TCP连接)
