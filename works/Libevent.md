@@ -22,7 +22,7 @@
 
 [R7：*bufferevent*进阶使用](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r7-bufferevents-advanced-topics-bufferevent%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8)
 
-[R8：*evbuffer*:缓存IO的高效且实用的方式](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r8-evbuffers-utility-functionality-for-buffered-io-evbuffer%E7%BC%93%E5%AD%98io%E7%9A%84%E9%AB%98%E6%95%88%E4%B8%94%E5%AE%9E%E7%94%A8%E7%9A%84%E6%96%B9%E5%BC%8F)
+[R8：*evbuffer*：缓存IO的高效且实用的方式](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r8-evbuffers-utility-functionality-for-buffered-io-evbuffer%E7%BC%93%E5%AD%98io%E7%9A%84%E9%AB%98%E6%95%88%E4%B8%94%E5%AE%9E%E7%94%A8%E7%9A%84%E6%96%B9%E5%BC%8F)
 
 [R9：监听并接受TCP连接](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r9-connection-listeners-accepting-tcp-connections-%E7%9B%91%E5%90%AC%E5%B9%B6%E6%8E%A5%E5%8F%97tcp%E8%BF%9E%E6%8E%A5)
 
