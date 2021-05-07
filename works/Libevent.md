@@ -356,8 +356,8 @@ int event_assign(struct event *event, struct event_base *base, evutil_socket_t f
 WARNING：不要对已经在base中未决的事件调用 *event_assign()* ，这可能会导致难以诊断的错误。如果已经初始化和成为未决的，调用 *event_assign()* 之前需要调用 *event_del()* 。
 
 4️⃣:关于状态变更
-函数名|原状态|终状态
---|:--:|:--:
+函数名|原状态|终状态|描述
+--|:--:|:--:|--
 int event_add(struct event \*ev, const struct timeval \*tv); | 初始态 | 未决态 | 如为超时事件，tv内为超时所需要经过的时间而非时间戳
 int event_del(struct event \*ev); | 未决态 | 非未决态 | 事件即使激活，此时删除事件，回调也不会执行
 int event_remove_timer(struct event \*ev); | 未决态 | (非)未决态 | 仅对超时事件使用，其余无效；移除超时事件的tv，如果时间只有**EV_TIMEOUT**,那么它的效果等同于 *event_del()*
