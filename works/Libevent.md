@@ -177,7 +177,7 @@ else            //child
 }
 ```
 ---
-### R3: Running an event loop (使用事件循环)
+### R3: Running an event loop (使用事件循环🌟)
 事件循环，顾名思义就是让base loop起来，处理里面的event，这里base充当一个controller的角色；
 
 🅰️:开始事件循环
@@ -242,9 +242,12 @@ int event_base_update_cache_time(struct event_base *base); //2.1.1-alpha新增�
 🐛DEBUG相关：
 
 如果想获得base里面所有的事件及其状态，可以用它写进文件里；
-`void event_base_dump_events(struct event_base *base, FILE *f);`
 
-### R4: Working with events (与事件一起工作)
+`void event_base_dump_events(struct event_base *base, FILE *f);`
+---
+### R4: Working with events (与事件一起工作🌟)
+
+
 ### R5: Utility and portability functions (扩展和可移植函数)
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
 ### R7: Bufferevents: advanced topics (*bufferevent*进阶使用)
