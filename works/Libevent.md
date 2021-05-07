@@ -362,7 +362,7 @@ int event_add(struct event \*ev, const struct timeval \*tv); | 初始态 | 未�
 int event_del(struct event \*ev); | 未决态 | 非未决态 | 事件即使激活，此时删除事件，回调也不会执行
 int event_remove_timer(struct event \*ev); | 未决态 | (非)未决态 | 仅对超时事件使用，其余无效；移除超时事件的tv，如果时间只有**EV_TIMEOUT**,那么它的效果等同于 *event_del()*
 int event_priority_set(struct event \*event, int priority); | \ | \ | 设置事件的优先级
-int event_get_priority(const struct event \*ev); | \ | \ | 返回事件的优先级
+int event_get_priority(const struct event \*ev); | \ | \ | 返回事件的优先级(2.1.2-alpha新增)
 int event_pending(const struct event \*ev, short what, struct timeval \*tv_out); | \ | \ | 函数确定给定的事件是否是未决的或者激活的。如果是，而且*what*参数设置了标志，则函数会返回事件当前为之未决或者激活的所有标志(flags)。如果提供了*tv_out*参数，并且*what*参数中设置了 **EV_TIMEOUT** 标志，而事件当前正因超时事件而未决或者激活，则*tv_out*会返回事件的超时值
 evutil_socket_t event_get_fd(const struct event \*ev); | \ | \ | 返回事件配置的文件描述符
 struct event_base \*event_get_base(const struct event \*ev); | \ | \ | 返回事件绑定的event_base
@@ -370,6 +370,18 @@ short event_get_events(const struct event \*ev); | \ | \ | 返回事件配置的
 event_callback_fn event_get_callback(const struct event \*ev); | \ | \ | 返回事件的回调函数
 void \*event_get_callback_arg(const struct event \*ev); | \ | \ | 返回事件回调函数及其参数指针
 void event_get_assignment(const struct event \*event, struct event_base \*\*base_out, evutil_socket_t \*fd_out, short \*events_out, event_callback_fn \*callback_out, void \*\*arg_out); | \ | \ | 将对应参数赋予#1的event中
+
+5️⃣:关于优化的一些内容
+
+可获取当前正在运行的事件，仅在当前base循环里有用！仅在base运行线程有用！
+
+`struct event *event_base_get_running_event(struct event_base *base);`
+
+如果想要事件做一次就直接自动释放(那么当然不支持SIGNAL和PERSIST)，就可以用:
+
+`int event_base_once(struct event_base *, evutil_socket_t, short, void (*)(evutil_socket_t, short, void *), void *, const struct timeval *);`
+
+缺点是该事件无法用*event_del()* 删除，无法手动激活使用，如果希望能够取消事件，应该使用*event_new()* 或者*event_assign()* ，且2.1.2-alpha前，这类事件如果一直未触发，不会自动释放，会导致内存泄露，即便是该版本后能随base释放，如果它的回调函数关联到某些地方，仍然不会自动释放🈲
 
 ### R5: Utility and portability functions (扩展和可移植函数)
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
