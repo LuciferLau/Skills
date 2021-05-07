@@ -138,7 +138,7 @@ int event_config_set_flag(struct event_config *cfg, enum event_base_config_flag 
 
 `int event_base_get_npriorities(struct event_base *base);`
 
-在 *forK()* 之后，base不一定可以正常的工作，所以需要重新初始化这个event_base；
+在 *fork()* 之后，后端不一定可以正常的工作，所以需要重新初始化这个event_base；
 
 `int event_reinit(struct event_base *base);`
 
@@ -156,8 +156,10 @@ else            //child
     continue_running_child(base);
 }
 ```
-
+---
 ### R3: Running an event loop (使用事件循环)
+
+
 ### R4: Working with events (与事件一起工作)
 ### R5: Utility and portability functions (扩展和可移植函数)
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
