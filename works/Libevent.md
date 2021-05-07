@@ -4,14 +4,17 @@
 ![](https://camo.githubusercontent.com/911381096c669dd9fef3699539e6b9cf38b0ef4aac3a546f76741bc919d1bd9a/68747470733a2f2f6c69626576656e742e6f72672f6c69626576656e74332e706e67)
 ---
 # 目录
-[R0]
+[R0](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r0-preliminaries-%E7%AC%AC%E4%B8%80%E6%AD%A5%E4%B8%87%E4%B8%88%E9%AB%98%E6%A5%BC%E5%B9%B3%E5%9C%B0%E8%B5%B7)
 [R1](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r1-setting-up-the-libevent-library-%E8%AE%BE%E7%BD%AElibevent)
 [R2](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r2-getting-an-event_base-%E4%BD%BF%E7%94%A8event_base%E9%87%8D%E8%A6%81%E5%9F%BA%E7%A1%80)
-[R3]
-[R4]
-[R5]
-[R6]
-[R7]
+[R3](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r3-running-an-event-loop-%E4%BD%BF%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF)
+[R4](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r4-working-with-events-%E4%B8%8E%E4%BA%8B%E4%BB%B6%E4%B8%80%E8%B5%B7%E5%B7%A5%E4%BD%9C)
+[R5](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r5-utility-and-portability-functions-%E6%89%A9%E5%B1%95%E5%92%8C%E5%8F%AF%E7%A7%BB%E6%A4%8D%E5%87%BD%E6%95%B0)
+[R6](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r6-bufferevents-concepts-and-basics-bufferevents%E7%9A%84%E6%A6%82%E5%BF%B5%E4%B8%8E%E5%9F%BA%E7%A1%80)
+[R7](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r7-bufferevents-advanced-topics-bufferevent%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8)
+[R8](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r8-evbuffers-utility-functionality-for-buffered-io-evbuffer%E7%BC%93%E5%AD%98io%E7%9A%84%E9%AB%98%E6%95%88%E4%B8%94%E5%AE%9E%E7%94%A8%E7%9A%84%E6%96%B9%E5%BC%8F)
+[R9](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r9-connection-listeners-accepting-tcp-connections-%E7%9B%91%E5%90%AC%E5%B9%B6%E6%8E%A5%E5%8F%97tcp%E8%BF%9E%E6%8E%A5)
+[R10](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r10-dns-for-libevent-%E4%BD%BF%E7%94%A8libevent%E7%9A%84dns%E5%8A%9F%E8%83%BD)
 
 
 🤐顺带吐槽下，项目用的redmine感觉就是开单改进度关单的工具，公司也没有用git做项目管理，
