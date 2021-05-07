@@ -329,20 +329,23 @@ libevent提供了超时事件的宏定义，同时也提供了信号事件的宏
 #define evtimer_add(ev, tv) | event_add((ev),(tv))
 #define evtimer_del(ev) | event_del(ev)
 #define evtimer_pending(ev, tv_out) | event_pending((ev), EV_TIMEOUT, (tv_out))
+#define evtimer_assign(event, base, callback, arg) | event_assign(event, base, -1, 0, callback, arg)
 #define evsignal_new(base, signum, cb, arg) | event_new(base, signum, EV_SIGNAL\|EV_PERSIST, cb, arg)
 #define evsignal_add(ev, tv) | event_add((ev),(tv))
 #define evsignal_del(ev) | event_del(ev)
 #define evsignal_pending(ev, what, tv_out) | event_pending((ev), (what), (tv_out))
+#define evsignal_assign(event, base, signum, callback, arg) | event_assign(event, base, signum, EV_SIGNAL\|EV_PERSIST, callback, arg)
 
 For Example:
 
-定义一个挂起信号事件;
-`struct event *evt;`
-
-假设base已经创建，可以这样子绑定这个事件到base;
-`evt = evsignal_new(base, SIGHUP, cb_hubfunc, NULL);`
+定义一个挂起信号事件pointer，假设base已经创建，可以这样子绑定这个事件到base;
+`struct event *evt = evsignal_new(base, SIGHUP, cb_hubfunc, NULL);`
 
 PS:event_base的后端，除了**kqueue**，每个进程中只能有一个信号事件可以捕获信号，所以多个信号事件通常是不正常工作的，且不要设置**TIMEOUT**条件，*因为可能不被支持(待定)* 。
+
+`int event_assign(struct event *event, struct event_base *base, evutil_socket_t fd, short what, void (*callback)(evutil_socket_t, short, void *), void *arg);
+该函数比起event_new多了#1参数，用于将这个事件在一个大的结构体里初始化，可以省去一点指针的开销，分配器分配小内存的开销(可能考虑碎片？)，缓存中没有事件时获取事件的开销，
+但最好别用这个接口，除非你的结构体能保证在不同OS下的空间都足够容纳这个event，`
 
 
 ### R5: Utility and portability functions (扩展和可移植函数)
