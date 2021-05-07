@@ -323,18 +323,18 @@ PS:如果想要将自己作为参数传入回调，可以使用 `void *event_sel
 3️⃣:关于触发条件
 
 libevent提供了超时事件的宏定义，同时也提供了信号事件的宏定义，如下：
-宏|等价于
+#define 宏|等价于
 --|:--:
-#define evtimer_new(base, callback, arg) | event_new((base), -1, 0, (callback), (arg))
-#define evtimer_add(ev, tv) | event_add((ev),(tv))
-#define evtimer_del(ev) | event_del(ev)
-#define evtimer_pending(ev, tv_out) | event_pending((ev), EV_TIMEOUT, (tv_out))
-#define evtimer_assign(event, base, callback, arg) | event_assign(event, base, -1, 0, callback, arg)
-#define evsignal_new(base, signum, cb, arg) | event_new(base, signum, EV_SIGNAL\|EV_PERSIST, cb, arg)
-#define evsignal_add(ev, tv) | event_add((ev),(tv))
-#define evsignal_del(ev) | event_del(ev)
-#define evsignal_pending(ev, what, tv_out) | event_pending((ev), (what), (tv_out))
-#define evsignal_assign(event, base, signum, callback, arg) | event_assign(event, base, signum, EV_SIGNAL\|EV_PERSIST, callback, arg)
+evtimer_new(base, callback, arg) | event_new((base), -1, 0, (callback), (arg))
+evtimer_add(ev, tv) | event_add((ev),(tv))
+evtimer_del(ev) | event_del(ev)
+evtimer_pending(ev, tv_out) | event_pending((ev), EV_TIMEOUT, (tv_out))
+evtimer_assign(event, base, callback, arg) | event_assign(event, base, -1, 0, callback, arg)
+evsignal_new(base, signum, cb, arg) | event_new(base, signum, EV_SIGNAL\|EV_PERSIST, cb, arg)
+evsignal_add(ev, tv) | event_add((ev),(tv))
+evsignal_del(ev) | event_del(ev)
+evsignal_pending(ev, what, tv_out) | event_pending((ev), (what), (tv_out))
+evsignal_assign(event, base, signum, callback, arg) | event_assign(event, base, signum, EV_SIGNAL\|EV_PERSIST, callback, arg)
 
 For Example:
 
@@ -406,6 +406,7 @@ WIN32的socket比较特殊，所以timeval对其进行了处理
 
 2️⃣:工具函数
 + ⏲️时间相关
+
 函数|描述(这里的参数都是timeval结构)
 --|:--:
 #define evutil_timeradd(tvp, uvp, vvp) | vvp = tvp + uvp
@@ -418,6 +419,7 @@ int evutil_gettimeofday(struct timeval \*tv, struct timezone \*tz) | #1是给tv�
 + 🧦套接字兼容(因为Windows不兼容Berkeley的套接字API，暂时忽略，项目在Linux开发，稳)
 
 + ✏️字符串相关
+
 函数|描述
 --|:--:
 ev_int64_t evutil_strtoll(const char \*s, char \*\*endptr, int base) | 字符串中数字部分转为长整型返回，字符部分放入endptr
@@ -427,6 +429,7 @@ int evutil_ascii_strcasecmp(const char \*str1, const char \*str2) | 比较字符
 int evutil_ascii_strncasecmp(const char \*str1, const char \*str2, size_t n) | 同上，表示只比较前n个字符
 
 + 🗺️网络相关
+
 函数|描述
 --|:--:
 const char \*evutil_inet_ntop(int af, const void \*src, char \*dst, size_t len) | 网络序转字节序 AF_INET||AF_INET6
