@@ -180,8 +180,7 @@ else            //child
 ### R3: Running an event loop (使用事件循环)
 事件循环，顾名思义就是让base loop起来，处理里面的event，这里base充当一个controller的角色；
 
-给base绑定事件，可以有2种方式；
-🅰️:通过event_base_loop使用你想要的方式进行loop;
+🅰️:开始事件循环
 ```
 #define EVLOOP_ONCE             0x01
 #define EVLOOP_NONBLOCK         0x02
@@ -216,6 +215,20 @@ ONCE和NONBLOCK的区别也比较简单，
 NONBLOCK会不断尝试检测注册事件的状态，并将它们标记为active，如果没事件触发，直接就返回了；
 ONCE则阻塞在else处，等待至少一个事件被触发，并标记为active处理完返回。
 ```
+🅱️:结束事件循环
+event_base_loopexit可以在指定时间之后停止循环，若tv为NULL则立刻停止；
+
+`int event_base_loopexit(struct event_base *base, const struct timeval *tv);`
+
+event_base_loopbreak也可以立刻停止循环，区别是前者执行完forLoop中所有active事件的回调后停止，后者只执行完当前active事件的回调(break forLoop)。
+
+`int event_base_loopbreak(struct event_base *base);`
+
+若果想知道base是因为哪种方式停止的，可通过这两个函数；
+
+`int event_base_got_exit(struct event_base *base);`
+
+`int event_base_got_break(struct event_base *base);`
 
 ### R4: Working with events (与事件一起工作)
 ### R5: Utility and portability functions (扩展和可移植函数)
