@@ -138,6 +138,24 @@ int event_config_set_flag(struct event_config *cfg, enum event_base_config_flag 
 
 `int event_base_get_npriorities(struct event_base *base);`
 
+在 *forK()* 之后，base不一定可以正常的工作，所以需要重新初始化这个event_base；
+
+`int event_reinit(struct event_base *base);`
+
+for example:
+```
+struct event_base *base = event_base_new();
+/* ... add some events to the event_base ... */
+if (fork())     //parent
+{
+    continue_running_parent(base);
+} 
+else            //child 
+{ 
+    event_reinit(base);
+    continue_running_child(base);
+}
+```
 
 ### R3: Running an event loop (使用事件循环)
 ### R4: Working with events (与事件一起工作)
