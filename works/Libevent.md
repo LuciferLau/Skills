@@ -178,7 +178,44 @@ else            //child
 ```
 ---
 ### R3: Running an event loop (使用事件循环)
+事件循环，顾名思义就是让base loop起来，处理里面的event，这里base充当一个controller的角色；
 
+给base绑定事件，可以有2种方式；
+🅰️:通过event_base_loop使用你想要的方式进行loop;
+```
+#define EVLOOP_ONCE             0x01
+#define EVLOOP_NONBLOCK         0x02
+#define EVLOOP_NO_EXIT_ON_EMPTY 0x04 
+int event_base_loop(struct event_base *base, int flags);
+int event_base_dispatch(struct event_base *base);
+event_base_dispatch == (没有flags的)event_base_loop
+
+LOOP工作方式的伪代码：
+while (any events are registered with the loop, or EVLOOP_NO_EXIT_ON_EMPTY was set) {
+    if (EVLOOP_NONBLOCK was set, or any events are already active)
+        如果有事件被触发，标记他们为active的
+    else
+        等待至少一个事件被触发，并标记为active的
+        
+    for (p = 0; p < n_priorities; ++p) {
+       if (当前p优先级有active事件) {
+          执行当前p优先级的所有active事件
+          break; /* Do not run any events of a less important priority */
+       }
+    }
+    
+    if (EVLOOP_ONCE was set or EVLOOP_NONBLOCK was set)
+       break;
+}
+
+无flags的情况下，event_base_loop（）函数默认运行 event_base 直到其中没有已经注册的事件为止。
+
+有flags的情况下，由伪代码可以看出，循环中如果没有注册事件，但设置了 EVLOOP_NO_EXIT_ON_EMPTY ，这个循环也将无限做下去；
+否则在循环执行一次后，将break这个while，返回循环结果，succ 0，fatal/err -1；
+ONCE和NONBLOCK的区别也比较简单，
+NONBLOCK会不断尝试检测注册事件的状态，并将它们标记为active，如果没事件触发，直接就返回了；
+ONCE则阻塞在else处，等待至少一个事件被触发，并标记为active处理完返回。
+```
 
 ### R4: Working with events (与事件一起工作)
 ### R5: Utility and portability functions (扩展和可移植函数)
