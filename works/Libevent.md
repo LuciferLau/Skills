@@ -10,9 +10,12 @@
 
 [R2：创建event_base](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r2-getting-an-event_base-%E4%BD%BF%E7%94%A8event_base%E9%87%8D%E8%A6%81%E5%9F%BA%E7%A1%80)
 
-[R3](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r3-running-an-event-loop-%E4%BD%BF%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF)
-[R4](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r4-working-with-events-%E4%B8%8E%E4%BA%8B%E4%BB%B6%E4%B8%80%E8%B5%B7%E5%B7%A5%E4%BD%9C)
-[R5](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r5-utility-and-portability-functions-%E6%89%A9%E5%B1%95%E5%92%8C%E5%8F%AF%E7%A7%BB%E6%A4%8D%E5%87%BD%E6%95%B0)
+[R3：使用事件循环](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r3-running-an-event-loop-%E4%BD%BF%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF)
+
+[R4：与事件一起工作](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r4-working-with-events-%E4%B8%8E%E4%BA%8B%E4%BB%B6%E4%B8%80%E8%B5%B7%E5%B7%A5%E4%BD%9C)
+
+[R5：扩展和可移植函数](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r5-utility-and-portability-functions-%E6%89%A9%E5%B1%95%E5%92%8C%E5%8F%AF%E7%A7%BB%E6%A4%8D%E5%87%BD%E6%95%B0)
+
 [R6](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r6-bufferevents-concepts-and-basics-bufferevents%E7%9A%84%E6%A6%82%E5%BF%B5%E4%B8%8E%E5%9F%BA%E7%A1%80)
 [R7](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r7-bufferevents-advanced-topics-bufferevent%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8)
 [R8](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r8-evbuffers-utility-functionality-for-buffered-io-evbuffer%E7%BC%93%E5%AD%98io%E7%9A%84%E9%AB%98%E6%95%88%E4%B8%94%E5%AE%9E%E7%94%A8%E7%9A%84%E6%96%B9%E5%BC%8F)
@@ -91,7 +94,7 @@ int check_version_match(void) //判断当前运行版本号是否为编译时版
 `在释放先前分配的event_base等结构体时，内存并不能完全释放干净，可能会有部分全局结构体遗留，通常这无关紧要，但这会导致部分监察工具觉得程序出现了内存泄漏，这时候可以调用：void libevent_global_shutdown(void)，这个函数不会帮你释放你先前创造的结构体，只是起到回收垃圾，即那些残留结构体的作用，具体可以参考event2/event.h中定义与.c中的实现`
 #### 锁和线程：理解pthread即可
 ---
-### R2: Getting an event_base (使用event_base,重要基础)
+### R2: Getting an event_base (创建event_base,重要基础)
 当然，可以用简单的方式new一个最普通的base出来；
 
 `struct event_base *event_base_new(void);`
