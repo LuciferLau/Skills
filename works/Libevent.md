@@ -349,12 +349,26 @@ int event_assign(struct event *event, struct event_base *base, evutil_socket_t f
 ```
 该函数比起event_new多了#1参数，用于将这个事件在一个大的结构体里初始化，
 
-可以省去一点指针的开销，分配器分配小内存的开销(可能考虑碎片？)，缓存中没有事件时获取事件的开销，
+可以省去：1、对新event结构体指针取值的开销，2、内存分配器在堆分配小对象的开销(可能考虑碎片？)，3、缓存中没有事件时获取事件的开销，
 
-但最好别用这个接口，除非你的结构体能保证在不同OS下的空间都足够容纳这个event，可用*event_get_struct_event_size()* 获取事件结构体大小。
+最好别用这个接口，除非你的结构体能保证在不同OS下的空间都足够容纳这个event，可用*event_get_struct_event_size()* 获取事件结构体大小。
 
 WARNING：不要对已经在base中未决的事件调用 *event_assign()* ，这可能会导致难以诊断的错误。如果已经初始化和成为未决的，调用 *event_assign()* 之前需要调用 *event_del()* 。
 
+4️⃣:关于状态变更
+函数名|原状态|终状态
+--|:--:|:--:
+int event_add(struct event \*ev, const struct timeval \*tv); | 初始态 | 未决态 | 如为超时事件，tv内为超时所需要经过的时间而非时间戳
+int event_del(struct event \*ev); | 未决态 | 非未决态 | 事件即使激活，此时删除事件，回调也不会执行
+int event_remove_timer(struct event \*ev); | 未决态 | (非)未决态 | 仅对超时事件使用，其余无效；移除超时事件的tv，如果时间只有**EV_TIMEOUT**,那么它的效果等同于 *event_del()*
+int event_priority_set(struct event \*event, int priority); | \ | \ | 设置事件的优先级
+int event_get_priority(const struct event \*ev); | \ | \ | 返回事件的优先级
+int event_pending(const struct event \*ev, short what, struct timeval \*tv_out); | \ | \ | 函数确定给定的事件是否是未决的或者激活的。如果是，而且*what*参数设置了标志，则函数会返回事件当前为之未决或者激活的所有标志(flags)。如果提供了*tv_out*参数，并且*what*参数中设置了 **EV_TIMEOUT** 标志，而事件当前正因超时事件而未决或者激活，则*tv_out*会返回事件的超时值
+evutil_socket_t event_get_fd(const struct event \*ev); | \ | \ | 返回事件配置的文件描述符
+struct event_base \*event_get_base(const struct event \*ev); | \ | \ | 返回事件绑定的event_base
+short event_get_events(const struct event \*ev); | \ | \ | 返回事件配置的条件
+event_callback_fn event_get_callback(const struct event \*ev); | \ | \ | 返回事件的回调函数
+void \*event_get_callback_arg(const struct event \*ev); | \ | \ | 返回事件回调函数及其参数指针
 
 ### R5: Utility and portability functions (扩展和可移植函数)
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
