@@ -450,9 +450,11 @@ int evutil_sockaddr_cmp(const struct sockaddr \*sa1, const struct sockaddr \*sa2
    - filtering bufferevents         过滤型 bufferevent ：将数据传输到底层bufferevent对象之前，处理输入或者输出数据的bufferevent：比如说，为了压缩或者转换数据。
    - paired bufferevents            成对的 bufferevent : 相互传输数据的两个bufferevent。
 
+#### 回调(Callbacks)与水位(watermarks)
 
 
 
+---
 ### R7: Bufferevents: advanced topics (*bufferevent*进阶使用)
 ### R8: Evbuffers: utility functionality for buffered IO (*evbuffer*:缓存IO的高效且实用的方式)
 ### R9: Connection listeners: accepting TCP connections (监听并接受TCP连接)
