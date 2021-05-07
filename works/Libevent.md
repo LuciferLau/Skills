@@ -274,6 +274,7 @@ EV_WRITE        0x04 |表示fd可写时触发这个事件
 EV_SIGNAL       0x08 |表示收到对应信号(POSIX)时触发这个事件
 EV_PERSIST      0x10 |表示事件是持久的
 EV_ET           0x20 |表示fd可读写时，应该边缘触发(如果event_base后端支持的话)
+
 1️⃣:创建一个事件
 ```
 typedef void (*event_callback_fn)(evutil_socket_t, short, void *); //回调函数指针
@@ -329,6 +330,7 @@ libevent提供了超时事件的宏定义，同时也提供了信号事件的宏
 #define evtimer_del(ev) | event_del(ev)
 #define evtimer_pending(ev, tv_out) | event_pending((ev), EV_TIMEOUT, (tv_out))
 #define evsignal_new(base, signum, cb, arg) | event_new(base, signum, EV_SIGNAL|EV_PERSIST, cb, arg)
+
 
 ### R5: Utility and portability functions (扩展和可移植函数)
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
