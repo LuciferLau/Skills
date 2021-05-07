@@ -216,6 +216,7 @@ NONBLOCK会不断尝试检测注册事件的状态，并将它们标记为active
 ONCE则阻塞在else处，等待至少一个事件被触发，并标记为active处理完返回。
 ```
 🅱️:结束事件循环
+
 event_base_loopexit可以在指定时间之后停止循环，若tv为NULL则立刻停止；
 
 `int event_base_loopexit(struct event_base *base, const struct timeval *tv);`
@@ -229,6 +230,19 @@ event_base_loopbreak也可以立刻停止循环，区别是前者执行完forLoo
 `int event_base_got_exit(struct event_base *base);`
 
 `int event_base_got_break(struct event_base *base);`
+
+⏲️时间的小坑；
+```
+int event_base_gettimeofday_cached(struct event_base *base, struct timeval *tv_out);
+int event_base_update_cache_time(struct event_base *base); //2.1.1-alpha新增，base若没有在运行循环，则调用无效
+如果想避免系统调用 gittimeofday() 带来的额外开销，可以调用event_base_gettimeofday_cached，这个函数会将回调开始时的时间设进tv_out里。
+但如果你的回调执行的时间越长，这个时间就会愈发不准确，当然你可以update它（个人见解：好像没啥意义，还不如直接拿系统当前时间）。
+```
+
+🐛DEBUG相关：
+
+如果想获得base里面所有的事件及其状态，可以用它写进文件里；
+`void event_base_dump_events(struct event_base *base, FILE *f);`
 
 ### R4: Working with events (与事件一起工作)
 ### R5: Utility and portability functions (扩展和可移植函数)
