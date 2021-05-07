@@ -4,9 +4,12 @@
 ![](https://camo.githubusercontent.com/911381096c669dd9fef3699539e6b9cf38b0ef4aac3a546f76741bc919d1bd9a/68747470733a2f2f6c69626576656e742e6f72672f6c69626576656e74332e706e67)
 ---
 # 目录
-[R0](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r0-preliminaries-%E7%AC%AC%E4%B8%80%E6%AD%A5%E4%B8%87%E4%B8%88%E9%AB%98%E6%A5%BC%E5%B9%B3%E5%9C%B0%E8%B5%B7)
-[R1](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r1-setting-up-the-libevent-library-%E8%AE%BE%E7%BD%AElibevent)
-[R2](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r2-getting-an-event_base-%E4%BD%BF%E7%94%A8event_base%E9%87%8D%E8%A6%81%E5%9F%BA%E7%A1%80)
+[R0：概要](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r0-preliminaries-%E7%AC%AC%E4%B8%80%E6%AD%A5%E4%B8%87%E4%B8%88%E9%AB%98%E6%A5%BC%E5%B9%B3%E5%9C%B0%E8%B5%B7)
+
+[R1：设置libevent](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r1-setting-up-the-libevent-library-%E8%AE%BE%E7%BD%AElibevent)
+
+[R2：创建event_base](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r2-getting-an-event_base-%E4%BD%BF%E7%94%A8event_base%E9%87%8D%E8%A6%81%E5%9F%BA%E7%A1%80)
+
 [R3](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r3-running-an-event-loop-%E4%BD%BF%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF)
 [R4](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r4-working-with-events-%E4%B8%8E%E4%BA%8B%E4%BB%B6%E4%B8%80%E8%B5%B7%E5%B7%A5%E4%BD%9C)
 [R5](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r5-utility-and-portability-functions-%E6%89%A9%E5%B1%95%E5%92%8C%E5%8F%AF%E7%A7%BB%E6%A4%8D%E5%87%BD%E6%95%B0)
