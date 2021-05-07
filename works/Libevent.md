@@ -129,7 +129,7 @@ int event_config_set_flag(struct event_config *cfg, enum event_base_config_flag 
 ----------------------------------------------------------------------------------------------------
 用配置虽然很爽，但你的OS不一定支持这些配置，如果不能满足你的要求，event_base_new_with_config只能返回NULL。
 ```
-可以让你的base有不同的优先级，event2/event.h:1440 中定义了 EVENT_MAX_PRIORITIES 值为 256
+可以让你的base有不同的优先级，**event2/event.h:1440** 中定义了 **EVENT_MAX_PRIORITIES** 值为 256。
 最好在new出这个base之后立刻调用，否则必须在所有事件active前调用；
 
 `int event_base_priority_init(struct event_base *base, int n_priorities);`
