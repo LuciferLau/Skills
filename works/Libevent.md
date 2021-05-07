@@ -78,13 +78,21 @@ int check_version_match(void) //判断当前运行版本号是否为编译时版
 ---
 ### R2: Getting an event_base (使用event_base,重要基础)
 当然，可以用简单的方式new一个最普通的base出来；
+
 `struct event_base *event_base_new(void);`
+
 也可以使用配置文件new一个你想要的base出来；
+
 `struct event_base *event_base_new_with_config(const struct event_config *cfg);`
+
 这个配置创建也有它的一套讲究，首先是先创建一个空的config；
+
 `struct event_config *event_config_new(void);`
+
 当然也有对应的析构函数;
+
 `void event_config_free(struct event_config *cfg);`
+
 然后就是配置这个配置了，说起来怪怪的🙇‍♂️
 ```
 你可以选择你不想要的后端:(select, poll, epoll, kqueue, devpoll, evport, win32)
