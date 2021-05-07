@@ -101,23 +101,23 @@ int check_version_match(void) //判断当前运行版本号是否为编译时版
 
 `struct event_base *event_base_new(void);`
 
-对应的析构函数就是(不会释放相关联的任何事件，或者关闭他们的套接字，或者释放任何指针)；
++ 对应的析构函数就是(不会释放相关联的任何事件，或者关闭他们的套接字，或者释放任何指针)；
 
 `void event_base_free(struct event_base *base);`
 
-也可以使用配置文件new一个你想要的base出来；
++ 也可以使用配置文件new一个你想要的base出来；
 
 `struct event_base *event_base_new_with_config(const struct event_config *cfg);`
 
-这个配置创建也有它的一套讲究，首先是先创建一个空的config；
++ 这个配置创建也有它的一套讲究，首先是先创建一个空的config；
 
 `struct event_config *event_config_new(void);`
 
-当然也有对应的析构函数;
++ 当然也有对应的析构函数;
 
 `void event_config_free(struct event_config *cfg);`
 
-然后就是配置这个配置了，说起来怪怪的🙇‍♂️
++ 然后就是配置这个配置了，说起来怪怪的🙇‍♂️
 ```
 你可以选择你不想要的后端:(select, poll, epoll, kqueue, devpoll, evport, win32)
 int event_config_avoid_method(struct event_config *cfg, const char *method);
@@ -149,16 +149,16 @@ int event_config_set_flag(struct event_config *cfg, enum event_base_config_flag 
 ----------------------------------------------------------------------------------------------------
 用配置虽然很爽，但你的OS不一定支持这些配置，如果不能满足你的要求，event_base_new_with_config只能返回NULL。
 ```
-可以让你的base有不同的优先级，**event2/event.h:1440** 中定义了 **EVENT_MAX_PRIORITIES** 值为 256。
++ 可以让你的base有不同的优先级，**event2/event.h:1440** 中定义了 **EVENT_MAX_PRIORITIES** 值为 256。
 最好在new出这个base之后立刻调用，否则必须在所有事件active前调用；
 
 `int event_base_priority_init(struct event_base *base, int n_priorities);`
 
-同样的，获取这个base当前的优先级;
++ 同样的，获取这个base当前的优先级;
 
 `int event_base_get_npriorities(struct event_base *base);`
 
-在 *fork()* 之后，后端不一定可以正常的工作，所以需要重新初始化这个event_base；
++ 在 *fork()* 之后，后端不一定可以正常的工作，所以需要重新初始化这个event_base；
 
 `int event_reinit(struct event_base *base);`
 
@@ -391,8 +391,53 @@ void event_get_assignment(const struct event \*event, struct event_base \*\*base
 
 + 从已清除的内存识别事件(从memset/bzero这些清楚的内存中获取事件，我是不敢用这种接口的，略)
 
+---
 ### R5: Utility and portability functions (扩展和可移植函数)
-### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
+1️⃣:基本定义
+WIN32的socket比较特殊，所以timeval对其进行了处理
+```
+#ifdef WIN32
+#define evutil_socket_t intptr_t
+#else
+#define evutil_socket_t int
+#endif
+```
+还有一些整数类型，兼容性类型基本根据C99标准指定。
+
+2️⃣:工具函数
++ ⏲️时间相关
+函数|描述(这里的参数都是timeval结构)
+--|:--:
+#define evutil_timeradd(tvp, uvp, vvp) | vvp = tvp + uvp
+#define evutil_timersub(tvp, uvp, vvp) | vvp = tvp - uvp
+#define evutil_timerclear(tvp) | tvp清零
+#define evutil_timerisset(tvp) | 判断tvp是否为0(空)
+#define evutil_timercmp(tvp, uvp, cmp) | tvp cmp(>, >=, <, <=, ==, !=) uvp ? true : false
+int evutil_gettimeofday(struct timeval \*tv, struct timezone \*tz) | #1是给tv赋值，#2暂时无用
+
++ 🧦套接字兼容(因为Windows不兼容Berkeley的套接字API，暂时忽略，项目在Linux开发，稳)
+
++ ✏️字符串相关
+函数|描述
+--|:--:
+ev_int64_t evutil_strtoll(const char \*s, char \*\*endptr, int base) | 字符串中数字部分转为长整型返回，字符部分放入endptr
+int evutil_snprintf(char \*buf, size_t buflen, const char \*format, ...) | 将可变参数按照format格式化写入buf中，超过buflen-1截断，末尾补\0
+int evutil_vsnprintf(char \*buf, size_t buflen, const char \*format, va_list ap) | 同上，'v'一般表示安全版函数
+int evutil_ascii_strcasecmp(const char \*str1, const char \*str2) | 比较字符串，大小写不敏感，返回同0，大于>0，小于<0
+int evutil_ascii_strncasecmp(const char \*str1, const char \*str2, size_t n) | 同上，表示只比较前n个字符
+
++ 🗺️网络相关
+函数|描述
+--|:--:
+const char \*evutil_inet_ntop(int af, const void \*src, char \*dst, size_t len) | 网络序转字节序 AF_INET||AF_INET6
+int evutil_inet_pton(int af, const char \*src, void \*dst) | 字节序转网络序
+int evutil_parse_sockaddr_port(const char \*str, struct sockaddr \*out, int \*outlen) | 解析来自str的地址，将结果写入到out中
+int evutil_sockaddr_cmp(const struct sockaddr \*sa1, const struct sockaddr \*sa2, int include_port) | 比较两个地址，如果sa1在sa2前面，返回负数；相等返回0；否则返回正数
+
++ 🥕其他(offsetof宏，安全随机数发生器，略，不需要用这个库里面的)
+
+---
+### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础🌟)
 ### R7: Bufferevents: advanced topics (*bufferevent*进阶使用)
 ### R8: Evbuffers: utility functionality for buffered IO (*evbuffer*:缓存IO的高效且实用的方式)
 ### R9: Connection listeners: accepting TCP connections (监听并接受TCP连接)
