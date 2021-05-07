@@ -343,8 +343,14 @@ For Example:
 
 PS:event_base的后端，除了**kqueue**，每个进程中只能有一个信号事件可以捕获信号，所以多个信号事件通常是不正常工作的，且不要设置**TIMEOUT**条件，*因为可能不被支持(待定)* 。
 
-`int event_assign(struct event *event, struct event_base *base, evutil_socket_t fd, short what, void (*callback)(evutil_socket_t, short, void *), void *arg);`
-该函数比起event_new多了#1参数，用于将这个事件在一个大的结构体里初始化，可以省去一点指针的开销，分配器分配小内存的开销(可能考虑碎片？)，缓存中没有事件时获取事件的开销，
+```
+int event_assign(struct event *event, struct event_base *base, evutil_socket_t fd, short what,
+                  void (*callback)(evutil_socket_t, short, void *), void *arg);
+```
+该函数比起event_new多了#1参数，用于将这个事件在一个大的结构体里初始化，
+
+可以省去一点指针的开销，分配器分配小内存的开销(可能考虑碎片？)，缓存中没有事件时获取事件的开销，
+
 但最好别用这个接口，除非你的结构体能保证在不同OS下的空间都足够容纳这个event，可用*event_get_struct_event_size()* 获取事件结构体大小。
 
 WARNING：不要对已经在base中未决的事件调用 *event_assign()* ，这可能会导致难以诊断的错误。如果已经初始化和成为未决的，调用 *event_assign()* 之前需要调用 *event_del()* 。
