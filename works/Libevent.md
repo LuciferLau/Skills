@@ -329,7 +329,7 @@ libevent提供了超时事件的宏定义，同时也提供了信号事件的宏
 #define evtimer_add(ev, tv) | event_add((ev),(tv))
 #define evtimer_del(ev) | event_del(ev)
 #define evtimer_pending(ev, tv_out) | event_pending((ev), EV_TIMEOUT, (tv_out))
-#define evsignal_new(base, signum, cb, arg) | event_new(base, signum, EV_SIGNAL|EV_PERSIST, cb, arg)
+#define evsignal_new(base, signum, cb, arg) | event_new(base, signum, EV_SIGNAL\|EV_PERSIST, cb, arg)
 
 
 ### R5: Utility and portability functions (扩展和可移植函数)
