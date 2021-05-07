@@ -1,5 +1,6 @@
 # LIBEVENT学习笔记
 > 好久没在GIT上面写点东西了，菜鸡的主动学习能力不足，没多久就到了自己的性能瓶颈，适逢最近有新大佬带引擎方面的知识，于是开始学习libevent相关的知识。
+> ~~🤐顺带吐槽下，项目用的redmine感觉就是开单改进度关单的工具，公司也没有用git做项目管理，最近倒是多了个叫TAPD的玩意，估计是企鹅那边的需求吧，项目管理真没劲👎
 
 ![](https://camo.githubusercontent.com/911381096c669dd9fef3699539e6b9cf38b0ef4aac3a546f76741bc919d1bd9a/68747470733a2f2f6c69626576656e742e6f72672f6c69626576656e74332e706e67)
 ---
@@ -21,10 +22,6 @@
 [R8](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r8-evbuffers-utility-functionality-for-buffered-io-evbuffer%E7%BC%93%E5%AD%98io%E7%9A%84%E9%AB%98%E6%95%88%E4%B8%94%E5%AE%9E%E7%94%A8%E7%9A%84%E6%96%B9%E5%BC%8F)
 [R9](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r9-connection-listeners-accepting-tcp-connections-%E7%9B%91%E5%90%AC%E5%B9%B6%E6%8E%A5%E5%8F%97tcp%E8%BF%9E%E6%8E%A5)
 [R10](https://github.com/LuciferLau/Skills/blob/master/works/Libevent.md#r10-dns-for-libevent-%E4%BD%BF%E7%94%A8libevent%E7%9A%84dns%E5%8A%9F%E8%83%BD)
-
-
-🤐顺带吐槽下，项目用的redmine感觉就是开单改进度关单的工具，公司也没有用git做项目管理，
-最近倒是多了个叫TAPD的玩意，估计是企鹅那边的需求吧，项目管理真没劲👎
 
 ---
 ## 跟着官方文档步步走
