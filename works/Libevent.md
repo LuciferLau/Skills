@@ -330,6 +330,19 @@ libevent提供了超时事件的宏定义，同时也提供了信号事件的宏
 #define evtimer_del(ev) | event_del(ev)
 #define evtimer_pending(ev, tv_out) | event_pending((ev), EV_TIMEOUT, (tv_out))
 #define evsignal_new(base, signum, cb, arg) | event_new(base, signum, EV_SIGNAL\|EV_PERSIST, cb, arg)
+#define evsignal_add(ev, tv) | event_add((ev),(tv))
+#define evsignal_del(ev) | event_del(ev)
+#define evsignal_pending(ev, what, tv_out) | event_pending((ev), (what), (tv_out))
+
+For Example:
+
+定义一个挂起信号事件;
+`struct event *evt;`
+
+假设base已经创建，可以这样子绑定这个事件到base;
+`evt = evsignal_new(base, SIGHUP, cb_hubfunc, NULL);`
+
+PS:event_base的后端，除了**kqueue**，每个进程中只能有一个信号事件可以捕获信号，所以多个信号事件通常是不正常工作的，且不要设置**TIMEOUT**条件，*因为可能不被支持(待定)* 。
 
 
 ### R5: Utility and portability functions (扩展和可移植函数)
