@@ -81,6 +81,10 @@ int check_version_match(void) //判断当前运行版本号是否为编译时版
 
 `struct event_base *event_base_new(void);`
 
+对应的析构函数就是(不会释放相关联的任何事件，或者关闭他们的套接字，或者释放任何指针)；
+
+`void event_base_free(struct event_base *base);`
+
 也可以使用配置文件new一个你想要的base出来；
 
 `struct event_base *event_base_new_with_config(const struct event_config *cfg);`
@@ -125,6 +129,15 @@ int event_config_set_flag(struct event_config *cfg, enum event_base_config_flag 
 ----------------------------------------------------------------------------------------------------
 用配置虽然很爽，但你的OS不一定支持这些配置，如果不能满足你的要求，event_base_new_with_config只能返回NULL。
 ```
+可以让你的base有不同的优先级，event2/event.h:1440 中定义了 EVENT_MAX_PRIORITIES 值为 256
+最好在new出这个base之后立刻调用，否则必须在所有事件active前调用；
+
+`int event_base_priority_init(struct event_base *base, int n_priorities);`
+
+同样的，获取这个base当前的优先级;
+
+`int event_base_get_npriorities(struct event_base *base);`
+
 
 ### R3: Running an event loop (使用事件循环)
 ### R4: Working with events (与事件一起工作)
