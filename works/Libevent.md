@@ -264,25 +264,71 @@ void \*arg 作为callback的参数传入，且callback函数必须返回0，才�
 未决态 pending|事件刚刚添加进event_base的状态
 激活态 active|事件触发的条件达成时进入的状态
 持久态 persistent|可将事件配置为这个状态，事件将一直保持未决
+非未决态|非持续态事件执行完一次回调后的状态
+
+#define 条件名|描述
+--|:--:
+EV_TIMEOUT      0x01 |表示超时发生时触发这个事件
+EV_READ         0x02 |表示fd可读时触发这个事件
+EV_WRITE        0x04 |表示fd可写时触发这个事件
+EV_SIGNAL       0x08 |表示收到对应信号(POSIX)时触发这个事件
+EV_PERSIST      0x10 |表示事件是持久的
+EV_ET           0x20 |表示fd可读写时，应该边缘触发(如果event_base后端支持的话)
 1️⃣:创建一个事件
 ```
-#define EV_TIMEOUT      0x01 //表示超时发生时触发这个事件
-#define EV_READ         0x02 //表示fd可读时触发这个事件
-#define EV_WRITE        0x04 //表示fd可写时触发这个事件
-#define EV_SIGNAL       0x08 //表示收到对应信号时触发这个事件
-#define EV_PERSIST      0x10 //表示事件是持久的
-#define EV_ET           0x20 //表示事件应该边缘触发(如果event_base后端支持的话)
-
-typedef void (*event_callback_fn)(evutil_socket_t, short, void *);
-
+typedef void (*event_callback_fn)(evutil_socket_t, short, void *); //回调函数指针
 struct event *event_new(struct event_base *base, evutil_socket_t fd, short what, event_callback_fn cb, void *arg);
-其中what参数是上面定义的flags的集合
+其中what参数是上面定义条件的flags的集合，除了cb自己，其它参数都会传给cb做参数使用。
+event通过_add()放入event_base，通过_del()从event_base移除；
+
+For Example:
+void cb_func(evutil_socket_t fd, short what, void *arg)
+{
+        const char *data = arg;
+        printf("Got an event on socket %d:%s%s%s%s [%s]",
+            (int) fd,
+            (what&EV_TIMEOUT) ? " timeout" : "",
+            (what&EV_READ)    ? " read" : "",
+            (what&EV_WRITE)   ? " write" : "",
+            (what&EV_SIGNAL)  ? " signal" : "",
+            data);
+}
+
+void main_loop(evutil_socket_t fd1, evutil_socket_t fd2)
+{
+        struct event *ev1, *ev2;
+        struct timeval five_seconds = {5,0};
+        struct event_base *base = event_base_new();
+
+        /* The caller has already set up fd1, fd2 somehow, and make them nonblocking. */
+        // 都是持久态事件，前者读就绪触发，后者写就绪触发，前者还能超时触发
+        ev1 = event_new(base, fd1, EV_TIMEOUT|EV_READ|EV_PERSIST, cb_func, (char*)"Reading event"); 
+        ev2 = event_new(base, fd2, EV_WRITE|EV_PERSIST, cb_func, (char*)"Writing event");
+
+        event_add(ev1, &five_seconds);
+        event_add(ev2, NULL);
+        event_base_dispatch(base); //默认方式开启event_base_loop
+}
+这段示例代码可以在事件触发回调时打印出他们所需要的部分条件，并将参数打印到标准I/O
 ```
 2️⃣:关于持久态
 
 一般的事件，在event_base中触发过变成激活态后，执行完回调函数，就会回到非未决态(event_base将无视这个事件)，如果想让它重新回到未决态(可以被触发激活)，需要在回调函数中对它进行 *event_add()* ；
 
 而EV_PERSIST的设置，表示了事件可以多次触发，多次激活->回调->未决；而想让它终止下来，则需要对其调用 *event_del()* 。
+
+PS:如果想要将自己作为参数传入回调，可以使用 `void *event_self_cbarg();`, 不可直接传入自己，因为自己此刻还没初始化。
+
+3️⃣:关于触发条件
+
+libevent提供了超时事件的宏定义，同时也提供了信号事件的宏定义，如下：
+宏|等价于
+--|:--:
+#define evtimer_new(base, callback, arg) | event_new((base), -1, 0, (callback), (arg))
+#define evtimer_add(ev, tv) | event_add((ev),(tv))
+#define evtimer_del(ev) | event_del(ev)
+#define evtimer_pending(ev, tv_out) | event_pending((ev), EV_TIMEOUT, (tv_out))
+#define evsignal_new(base, signum, cb, arg) | event_new(base, signum, EV_SIGNAL|EV_PERSIST, cb, arg)
 
 ### R5: Utility and portability functions (扩展和可移植函数)
 ### R6: Bufferevents: concepts and basics (*bufferevents*的概念与基础)
