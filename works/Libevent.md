@@ -473,7 +473,7 @@ int evutil_sockaddr_cmp(const struct sockaddr \*sa1, const struct sockaddr \*sa2
 相应的，bufferevent也有标志位通知non-data-oriented(非面向数据)事件，有下列标志位：
 
 标志|描述
---|:--:
+--|:--
 BEV_EVENT_READING | 读取操作时发生某事件，具体是哪种事件请看其他标志。
 BEV_EVENT_WRITING | 写入操作时发生某事件，具体是哪种事件请看其他标志。
 BEV_EVENT_ERROR | 操作时发生错误，用EVUTIL_SOCKET_ERROR()获取错误的更多信息。
