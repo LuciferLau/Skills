@@ -481,6 +481,45 @@ BEV_EVENT_TIMEOUT | 发生超时。
 BEV_EVENT_EOF | 遇到文件结束指示。
 BEV_EVENT_CONNECTED | 请求的连接过程已经完成。
 
+💡延迟调用：指回调不在条件达成立即调用，在依赖关系复杂时，进行排队调用可以确定回调安全进行。
+
+
+1️⃣创建bufferevent：其中fd是表示套接字的文件描述符，options是下面表格中任意标志。
+
+`struct bufferevent *bufferevent_socket_new(struct event_base *base, evutil_socket_t fd, enum bufferevent_options options);`
+
+选项|描述
+--|:--
+BEV_OPT_CLOSE_ON_FREE | 释放bufferevent时关闭底层传输端口。这将关闭底层套接字，释放底层bufferevent等。上文中提到，释放这些结构体全局不一定能释放干净，调用这个选项能够部分改善（待验证）
+BEV_OPT_THREADSAFE | 自动为bufferevent分配锁，这样就可以安全地在多个线程中使用bufferevent。（看着就很强）
+BEV_OPT_DEFER_CALLBACKS | 设置这个标志时，bufferevent延迟所有回调，如上所述。
+BEV_OPT_UNLOCK_CALLBACKS | 默认情况下，如果设置bufferevent为线程安全的，则bufferevent会在调用用户提供的回调时进行锁定。设置这个选项会让libevent在执行回调的时候不进行锁定。
+
+2️⃣使用bufferevnet连接服务器：与标准调用的connect()参数几乎一致，参考UNP；值得注意的是，connect函数告知bufferevent连接未成功，需要等待accept。
+
+`int bufferevent_socket_connect(struct bufferevent *bev, struct sockaddr *address, int addrlen);`
+
+还可以连接到指定的主机:
+
+`int bufferevent_socket_connect_hostname(struct bufferevent *bev, struct evdns_base *dns_base, int family, const char *hostname, int port);`
+
+3️⃣释放bufferevent：bufferevent内部具有引用计数，如果释放时还有未决的延迟回调，则在回调完成之bufferevent不会被删除
+`void bufferevent_free(struct bufferevent *bev);`
+
+4️⃣回调函数的修改，获取：readcb、writecb、eventcb；要禁用回调，传递NULL作为修改参数。
+```
+typedef void (*bufferevent_data_cb)(struct bufferevent *bev, void *ctx); //读写回调函数定义
+typedef void (*bufferevent_event_cb)(struct bufferevent *bev, short events, void *ctx); //事件回调函数定义
+void bufferevent_setcb(struct bufferevent *bufev, bufferevent_data_cb readcb, bufferevent_data_cb writecb, bufferevent_event_cb eventcb, void *cbarg);
+void bufferevent_getcb(struct bufferevent *bufev, bufferevent_data_cb *readcb_ptr, bufferevent_data_cb *writecb_ptr, bufferevent_event_cb *eventcb_ptr, void **cbarg_ptr);
+//bufferevent_getcb(2.1.1-alpha新增)，将bufferevent当前cb指针赋值到对应的*xxxcb_ptr上，参数放入**cbarg_ptr
+
+//控制bufferevent能否进行EV_READ，EV_WRITE
+void bufferevent_enable(struct bufferevent *bufev, short events); //启用事件
+void bufferevent_disable(struct bufferevent *bufev, short events); //正常情况下不要禁用事件，输出缓存无数据bufferevent会自动停止写入。
+short bufferevent_get_enabled(struct bufferevent *bufev); //获取bufferevent当前启用的事件
+```
+
 
 ---
 ### R7: Bufferevents: advanced topics (*bufferevent*进阶使用)
