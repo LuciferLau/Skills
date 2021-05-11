@@ -484,7 +484,7 @@ BEV_EVENT_CONNECTED | 请求的连接过程已经完成。
 💡延迟调用：指回调不在条件达成立即调用，在依赖关系复杂时，进行排队调用可以确定回调安全进行。
 
 
-1️⃣创建bufferevent：其中fd是表示套接字的文件描述符，options是下面表格中任意标志。
+##### 1️⃣创建bufferevent：其中fd是表示套接字的文件描述符，options是下面表格中任意标志。
 
 `struct bufferevent *bufferevent_socket_new(struct event_base *base, evutil_socket_t fd, enum bufferevent_options options);`
 
@@ -495,7 +495,7 @@ BEV_OPT_THREADSAFE | 自动为bufferevent分配锁，这样就可以安全地在
 BEV_OPT_DEFER_CALLBACKS | 设置这个标志时，bufferevent延迟所有回调，如上所述。
 BEV_OPT_UNLOCK_CALLBACKS | 默认情况下，如果设置bufferevent为线程安全的，则bufferevent会在调用用户提供的回调时进行锁定。设置这个选项会让libevent在执行回调的时候不进行锁定。
 
-2️⃣使用bufferevnet连接服务器：与标准调用的connect()参数几乎一致，参考UNP；值得注意的是，connect函数告知bufferevent连接未成功，需要等待accept。
+##### 2️⃣使用bufferevnet连接服务器：与标准调用的connect()参数几乎一致，参考UNP；值得注意的是，connect函数告知bufferevent连接未成功，需要等待accept。
 
 `int bufferevent_socket_connect(struct bufferevent *bev, struct sockaddr *address, int addrlen);`
 
@@ -503,10 +503,10 @@ BEV_OPT_UNLOCK_CALLBACKS | 默认情况下，如果设置bufferevent为线程安
 
 `int bufferevent_socket_connect_hostname(struct bufferevent *bev, struct evdns_base *dns_base, int family, const char *hostname, int port);`
 
-3️⃣释放bufferevent：bufferevent内部具有引用计数，如果释放时还有未决的延迟回调，则在回调完成之bufferevent不会被删除
+##### 3️⃣释放bufferevent：bufferevent内部具有引用计数，如果释放时还有未决的延迟回调，则在回调完成之bufferevent不会被删除
 `void bufferevent_free(struct bufferevent *bev);`
 
-4️⃣回调函数的修改，获取：readcb、writecb、eventcb；要禁用回调，传递NULL作为修改参数。
+##### 4️⃣回调函数的修改，获取：readcb、writecb、eventcb；要禁用回调，传递NULL作为修改参数。
 ```
 typedef void (*bufferevent_data_cb)(struct bufferevent *bev, void *ctx); //读写回调函数定义
 typedef void (*bufferevent_event_cb)(struct bufferevent *bev, short events, void *ctx); //事件回调函数定义
@@ -519,8 +519,44 @@ void bufferevent_enable(struct bufferevent *bufev, short events); //启用事件
 void bufferevent_disable(struct bufferevent *bufev, short events); //正常情况下不要禁用事件，输出缓存无数据bufferevent会自动停止写入。
 short bufferevent_get_enabled(struct bufferevent *bufev); //获取bufferevent当前启用的事件
 ```
+##### 5️⃣缓冲区的操作：其实和系统调用read()，write()类似，数据类型为evbuffer，详见R7。
+```
+struct evbuffer *bufferevent_get_input(struct bufferevent *bufev); //获取输入缓冲区
+struct evbuffer *bufferevent_get_output(struct bufferevent *bufev); //获取输出缓冲区
+int bufferevent_write(struct bufferevent *bufev, const void *data, size_t size); //添加size字节数据到输出缓冲区末尾
+int bufferevent_write_buffer(struct bufferevent *bufev, struct evbuffer *buf); //移除buf内所有内容，放置bufev末尾（移动）
+size_t bufferevent_read(struct bufferevent *bufev, void *data, size_t size); //读取最多size字节数据，并存入data，返回实际读取字节数
+int bufferevent_read_buffer(struct bufferevent *bufev, struct evbuffer *buf); //读取bufev所有内容，放入buf（移动）
+//清空bufferevent，有数据清空1，无则0，错误-1。iotype从EV_READ/WRITE选择组合。
+int bufferevent_flush(struct bufferevent *bufev, short iotype, enum bufferevent_flush_mode state);
+enum bufferevent_flush_mode {
+	BEV_NORMAL = 0, //通常在处理数据时设置这个state
+	BEV_FLUSH = 1, /** want to checkpoint all data sent. */
+	BEV_FINISHED = 2, //读到EOF或发送完数据
+};
+```
+#### 6️⃣其他相关操作：
 
+⏰超时回调：规定时间内没有读取或写入数据时候调用。只有在读取或者写入的时候才会计算超时，超时发生时，相应的读取/写入操作被禁止，回调调用。
 
+`void bufferevent_set_timeouts(struct bufferevent *bufev, const struct timeval *timeout_read, const struct timeval *timeout_write);`
+
+🧦仅能用于套接字bufferevent的函数：
+```
+优先级相关：
+int bufferevent_priority_set(struct bufferevent *bufev, int pri); //设置优先级，回看 event_priority_set()
+int bufferevent_get_priority(struct bufferevent *bufev); //获取当前bufev的优先级（2.1.2-alpha新增）
+文件描述符：
+int bufferevent_setfd(struct bufferevent *bufev, evutil_socket_t fd);
+evutil_socket_t bufferevent_getfd(struct bufferevent *bufev);
+获取event_base：
+struct event_base *bufferevent_get_base(struct bufferevent *bev);
+锁相关：
+void bufferevent_lock(struct bufferevent *bufev); //如果没设置BEV_OPT_THREADSAFE标记，锁无效
+void bufferevent_unlock(struct bufferevent *bufev);
+其他：
+struct bufferevent *bufferevent_get_underlying(struct bufferevent *bufev); //数返回作为bufferevent底层传输端口的另一个bufferevent，有待研究。
+```
 ---
 ### R7: Bufferevents: advanced topics (*bufferevent*进阶使用)
 ### R8: Evbuffers: utility functionality for buffered IO (*evbuffer*:缓存IO的高效且实用的方式)
