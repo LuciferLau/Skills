@@ -455,7 +455,12 @@ int evutil_sockaddr_cmp(const struct sockaddr \*sa1, const struct sockaddr \*sa2
       + 相互传输数据的两个bufferevent。
 
 #### 回调(Callbacks)与水位(watermarks)
-
+> 每个bufferevent有2个数据相关的回调：读取回调，写入回调。
+> 
+> 从底层传输端口读取了任意量的数据后，会调用读取回调；
+> 向底层传输端口输出了足够量的数据后，会调用写入回调；
+> 
+> 调整读取水位，写入水位，可以覆盖默认的函数行为。
 
 
 ---
