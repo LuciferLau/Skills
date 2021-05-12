@@ -716,7 +716,7 @@ EVBUFFER_EOL_NUL | 行尾是一个字节的\0(也就是ASCII的NUL)2.1.1-alpha�
 
 `int evbuffer_write(struct evbuffer *buffer, evutil_socket_t fd); //尽量向fd写入buf所有内容`
 
-`int evbuffer_write_atmost(struct evbuffer *buffer, evutil_socket_t fd, ev_ssize_t howmuch); //将buffer前面至多howmuch字节写入到fd，若-1则==write`
+`int evbuffer_write_atmost(struct evbuffer *buffer, evutil_socket_t fd, ev_ssize_t howmuch); //将buffer前面至多howmuch字节写入到fd，若howmuch为-1，效果与write相同`
 
 📖
 
@@ -731,15 +731,19 @@ struct evbuffer_cb_info {
 };
 回调函数定义:
 typedef void (*evbuffer_cb_func)(struct evbuffer *buffer, const struct evbuffer_cb_info *info, void *arg); 
+
 增加回调：
 struct evbuffer_cb_entry;
 struct evbuffer_cb_entry *evbuffer_add_cb(struct evbuffer *buffer, evbuffer_cb_func cb, void *cbarg);
+
 删除回调：
 int evbuffer_remove_cb_entry(struct evbuffer *buffer, struct evbuffer_cb_entry *ent);
 int evbuffer_remove_cb(struct evbuffer *buffer, evbuffer_cb_func cb, void *cbarg);
+
 回调标志位： #define EVBUFFER_CB_ENABLED 1 清楚这个标志则不会触发回调
 int evbuffer_cb_set_flags(struct evbuffer *buffer,  struct evbuffer_cb_entry *cb, ev_uint32_t flags);
 int evbuffer_cb_clear_flags(struct evbuffer *buffer, struct evbuffer_cb_entry *cb, ev_uint32_t flags);
+
 延迟回调：如果回调被延迟，则最终执行时，它可能是多个操作结果的总和；但能避免栈崩溃
 int evbuffer_defer_callbacks(struct evbuffer *buffer, struct event_base *base);
 ```
