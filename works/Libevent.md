@@ -559,9 +559,70 @@ struct bufferevent *bufferevent_get_underlying(struct bufferevent *bufev); //返
 ```
 ---
 ### R6a: Bufferevents: advanced topics (*bufferevent*进阶使用)
-> 入门请跳过此章节，本章主要描述bufferevent中那些平时不必须的高级特性（说是这么说，项目的evpairs立刻就用到了，且十分关键）
+> 入门请跳过此章节，本章主要描述bufferevent中那些平时不必须的高级特性
 
+#### 1️⃣使用成对的bufferevent:(项目参考了这个概念，但未使用这个结构)
+> 有时候网络程序需要与自身通信，但使用套接字会徒增消耗，所以我们可以创建一对成对的bufferevent。这样，写入到一个bufferevent的字节都被另一个接收(反过来也是)。
 
+*1-1:* 创建一对pair，相互connect，**BEV_OPT_CLOSE_ON_FREE**无效、**BEV_OPT_DEFER_CALLBACKS**总是打开，其它选项照常。
+
+`int bufferevent_pair_new(struct event_base *base, int options, struct bufferevent *pair[2]);`
+
+*1-2:* 至于为什么延迟回调强制打开呢？通常一边会通知另一边回调调用执行，并且循环这个过程多次，如果不延迟回调，其它连接可能饿死(全部CPU用在了互相通知上)，并且要求回调函数是可重入(线程安全，重复执行不影响外部数据)的。
+
+*1-3:* 支持*bufferevent_flush()* ，**BEV_NORMAL**或者**BEV_FLUSH**会强制要求所有相关数据传输到对端bufferevent中，**BEV_FINISHED**还会让对端的产生EOF事件。
+
+💡PS：释放对中某一个bufferevent，另一个不会自动释放，也不会有EOF；只会connect断开，无法进行读写数据或产生事件了。
+
+*1-4:* 获取pair中对端的bufferevent，若果对端还存在，且当前bev是在pair中，返回对端，否则NULL。
+
+`struct bufferevent *bufferevent_pair_get_partner(struct bufferevent *bev)`
+
+#### 2️⃣数据处理中间件——bufferevent过滤器：(了解概念，暂用不上这种功能)
+> 所有通过底层bufferevent接收的数据在到达过滤bufferevent之前都会经过“输入”过滤器的转换；
+> 
+> 所有通过底层bufferevent发送的数据在被发送到底层bufferevent之前都会经过“输出”过滤器的转换。
+
+#### 3️⃣速率限制，控制bufferevent的传输带宽：(了解概念，暂用不上这种功能)
+> 要创建速率限制组，使用一个 event_base 和一个已经初始化的 ev_token_bucket_cfg 作为参数调用*bufferevent_rate_limit_group_new* 函数 。 
+> 
+> 使用*bufferevent_add_to_rate_limit_group* 将bufferevent添加到组中； 
+> 
+> 使用*bufferevent_remove_from_rate_limit_group* 从组中删除bufferevent。
+>
+> 可以通过修改组的配置更改速率限制，速率限制实现仅计算TCP分组传输的数据。
+
+#### 4️⃣安全传输，使用OpenSSL：(⚠️项目使用了SSL，主要是HTTP通信时保护数据报) 
+> 因为很多应用不需要或者不想链接OpenSSL，这部分功能在单独的**libevent_openssl** 库中实现。未来版本可能会添加其他SSL/TLS库，如NSS/GnuTLS，当前只有OpenSSL。
+
+*4-1:* SSL对象及其状态，SSL对象有3种状态，在openssl_bufferevent对象CLOSE_ON_FREE时，对应SSL对象也同时关闭。
+```
+enum bufferevent_ssl_state {
+        BUFFEREVENT_SSL_OPEN = 0, //SSL握手已经完成
+        BUFFEREVENT_SSL_CONNECTING = 1, //SSL当前作为客户端在进行协商
+        BUFFEREVENT_SSL_ACCEPTING = 2, //SSL当前作为服务器在进行协商
+};
+```
+
+*4-2:* 基于过滤器和套接字的bufferevent。
+
+`struct bufferevent *bufferevent_openssl_filter_new(struct event_base *base, struct bufferevent *underlying, SSL *ssl, enum bufferevent_ssl_state state, int options);`
+
+`struct bufferevent *bufferevent_openssl_socket_new(struct event_base *base, evutil_socket_t fd, SSL *ssl, enum bufferevent_ssl_state state, int options);`
+
+💡PS：创建基于套接字的bufferevent时，如果SSL对象已经设置了套接字，fd只要传递-1就可以。也可以随后调用*bufferevent_setfd()* 来设置。
+
+*4-3:* SSL相关的一些操作。
+```
+SSL *bufferevent_openssl_get_ssl(struct bufferevent *bev); //返回使用的SSL对象
+unsigned long bufferevent_get_openssl_error(struct bufferevent *bev); //返回第一个未决的OpenSSLU错误
+int bufferevent_ssl_renegotiate(struct bufferevent *bev); //要求SSL重新协商(有些 SSL 版本具有与重新协商相关的安全问题)
+
+所有SSL协议的好版本（比如SSLv3，以及所有的TLS版本）都支持关闭认证操作，这可以在底层缓冲区中区分出到底是偶然的关闭还是恶意的终止。
+默认情况下，将除了正确关闭之外的所有关闭都视为链接错误。如果allow_dirty_shutdown标志为1，则将连接中的关闭视为 BEV_EVENT_EOF。
+int bufferevent_openssl_get_allow_dirty_shutdown(struct bufferevent *bev); //2.1.1-alpha新增
+void bufferevent_openssl_set_allow_dirty_shutdown(struct bufferevent *bev, int allow_dirty_shutdown); //2.1.1-alpha新增
+```
 
 ---
 ### R7: Evbuffers: utility functionality for buffered IO (*evbuffer*:缓存IO的高效且实用的方式)
