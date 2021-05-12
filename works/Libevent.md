@@ -651,6 +651,11 @@ void bufferevent_openssl_set_allow_dirty_shutdown(struct bufferevent *bev, int a
 
 *2-3:* 缓存的增删改查
 ```
+struct evbuffer_iovec {
+        void *iov_base;
+        size_t iov_len;
+}; //结构比较迷惑，项目未用到，暂略
+
 ➕尾增：
 int evbuffer_add(struct evbuffer *buf, const void *data, size_t datlen); //向buf尾添加data中datlen字节数据
 int evbuffer_add_printf(struct evbuffer *buf, const char *fmt, ...); //向buf尾格式化添加数据到
@@ -660,13 +665,21 @@ int evbuffer_add_vprintf(struct evbuffer *buf, const char *fmt, va_list ap); //�
 int evbuffer_prepend(struct evbuffer *buf, const void *data, size_t size); //除向buf前增加，同evbuffer_add
 int evbuffer_prepend_buffer(struct evbuffer *dst, struct evbuffer* src); //除移动到dst前，同evbuffer_add_buffer
 
+➕直接增，无需const void *data：
+/* 函数会扩展缓冲区以至少提供size字节的空间，到扩展空间的指针存放在vec，n_vecs是vec长度*/
+int evbuffer_reserve_space(struct evbuffer *buf, ev_ssize_t size, struct evbuffer_iovec *vec, int n_vecs);
+/* 写入iovec的数据不会在buf，直至调用commit */
+int evbuffer_commit_space(struct evbuffer *buf, struct evbuffer_iovec *vec, int n_vecs);
+
 ➖前删：
 int evbuffer_drain(struct evbuffer *buf, size_t len); //从buf前开始移除len字节
 int evbuffer_remove(struct evbuffer *buf, void *data, size_t datlen); //同上，只不过将移除的数据复制进data
 
 🌌改：
-int evbuffer_expand(struct evbuffer *buf, size_t datlen); //修改缓冲区最后一块或添加新块，使其能够容纳datlen且不需分配内存
-unsigned char *evbuffer_pullup(struct evbuffer *buf, ev_ssize_t size); //线性化buf前面size字节，如果存放内存不连续，可能需要复制或移动，非常耗时。
+/* 修改缓冲区最后一块或添加新块，使其能够容纳datlen且不需分配内存 */
+int evbuffer_expand(struct evbuffer *buf, size_t datlen);
+/* 线性化buf前面size字节，如果存放内存不连续，可能需要复制或移动，非常耗时 */
+unsigned char *evbuffer_pullup(struct evbuffer *buf, ev_ssize_t size);
 
 🚀移动：
 int evbuffer_add_buffer(struct evbuffer *dst, struct evbuffer *src); //src数据全部移到dst末尾，成功0否则-1
@@ -681,8 +694,11 @@ ev_ssize_t evbuffer_copyout_from(struct evbuffer *buf, const struct evbuffer_ptr
 struct evbuffer_ptr evbuffer_search(struct evbuffer *buffer, const char *what, size_t len, const struct evbuffer_ptr *start);
 /* 类似上面，但只查找end位置前的结果 */
 struct evbuffer_ptr evbuffer_search_range(struct evbuffer *buffer, const char *what, size_t len, const struct evbuffer_ptr *start, const struct evbuffer_ptr *end);
+/* 像evbuffer_readln()一样检测行结束，返回指向行结束符的ptr */
 struct evbuffer_ptr evbuffer_search_eol(struct evbuffer *buffer, struct evbuffer_ptr *start, size_t *eol_len_out, enum evbuffer_eol_style eol_style);
-
+/* 通过vec_out数组，数组的长度是n_vec。函数会让每个结构体包含指向evbuffer内部内存块的指针(iov_base)和块中数据长度 */
+int evbuffer_peek(struct evbuffer *buffer, ev_ssize_t len, struct evbuffer_ptr *start_at, struct evbuffer_iovec *vec_out, int n_vec);
+💡PS：多线程编程时，用peek先上锁，使用完返回内容后要解锁
 ```
 *2-4:* 面向行的输入，从evbuffer前面取出一行，用一个新分配的空字符结束的字符串返回这一行
 
@@ -690,9 +706,58 @@ struct evbuffer_ptr evbuffer_search_eol(struct evbuffer *buffer, struct evbuffer
 eol_style | 描述
 -- | --
 EVBUFFER_EOL_LF | 行尾是单个换行符（也就是\n，ASCII 值是0x0A）
-EVBUFFER_EOL_CRLF_STRICT | 行尾是一个回车符，后随一个换行符（也就是\r\n，ASCII 值是0x0D 0x0A）
+EVBUFFER_EOL_CRLF_STRICT | 行尾是一个回车符，后随一个换行符（也就是\r\n，ASCII值是0x0D 0x0A）
 EVBUFFER_EOL_CRLF| 行尾是一个可选的回车，后随一个换行符（也就是说，可以是\r\n 或者\n）。这种格式对于解析基于文本的互联网协议很有用，因为标准通常要求\r\n 的行结束符，而不遵循标准的客户端有时候只使用\n。
 EVBUFFER_EOL_ANY | 行尾是任意数量、任意次序的回车和换行符。这种格式不是特别有用。它的存在主要是为了向后兼容
+EVBUFFER_EOL_NUL | 行尾是一个字节的\0(也就是ASCII的NUL)2.1.1-alpha新增
 
+*2-5:* 网络IO
+✍️
+
+`int evbuffer_write(struct evbuffer *buffer, evutil_socket_t fd); //尽量向fd写入buf所有内容`
+
+`int evbuffer_write_atmost(struct evbuffer *buffer, evutil_socket_t fd, ev_ssize_t howmuch); //将buffer前面至多howmuch字节写入到fd，若-1则==write`
+
+📖
+
+`int evbuffer_read(struct evbuffer *buffer, evutil_socket_t fd, int howmuch); //从fd读取至多howmuch字节到buffer`
+
+*2-6:* 回调相关，在向evbuffer添加/移除数据时，回调执行。
+```
+struct evbuffer_cb_info {
+        size_t orig_size; //缓冲区改变大小前的字节数
+        size_t n_added; //添加字节数
+        size_t n_deleted; //移除字节数
+};
+回调函数定义:
+typedef void (*evbuffer_cb_func)(struct evbuffer *buffer, const struct evbuffer_cb_info *info, void *arg); 
+增加回调：
+struct evbuffer_cb_entry;
+struct evbuffer_cb_entry *evbuffer_add_cb(struct evbuffer *buffer, evbuffer_cb_func cb, void *cbarg);
+删除回调：
+int evbuffer_remove_cb_entry(struct evbuffer *buffer, struct evbuffer_cb_entry *ent);
+int evbuffer_remove_cb(struct evbuffer *buffer, evbuffer_cb_func cb, void *cbarg);
+回调标志位： #define EVBUFFER_CB_ENABLED 1 清楚这个标志则不会触发回调
+int evbuffer_cb_set_flags(struct evbuffer *buffer,  struct evbuffer_cb_entry *cb, ev_uint32_t flags);
+int evbuffer_cb_clear_flags(struct evbuffer *buffer, struct evbuffer_cb_entry *cb, ev_uint32_t flags);
+延迟回调：如果回调被延迟，则最终执行时，它可能是多个操作结果的总和；但能避免栈崩溃
+int evbuffer_defer_callbacks(struct evbuffer *buffer, struct event_base *base);
+```
+
+*2-7:* 性能调优与其它
+
+`int evbuffer_add_reference(struct evbuffer *outbuf, const void *data, size_t datlen, evbuffer_ref_cleanup_cb cleanupfn, void *extra);`
+
+这个函数通过**引用**向 evbuffer 末尾添加一段数据。不会进行复制：evbuffer只会存储一个到data处的datlen字节的指针。
+
+`typedef void (*evbuffer_ref_cleanup_cb)(const void *data, size_t datalen, void *extra);`
+
+因此，在evbuffer使用这个指针期间，必须保持指针是有效的。evbuffer会在不再需要这部分数据的时候调用用户提供的*cleanupfn* 。
+
+通过文件写evbuffer, add_by_file
+
+`int evbuffer_add_file(struct evbuffer *output, int fd, ev_off_t offset, size_t length); //将fd中offset开始处length字节添加到output末尾`
+
+---
 ### R8: Connection listeners: accepting TCP connections (监听并接受TCP连接)
 ### R9: DNS for Libevent (使用libevent的DNS功能)
