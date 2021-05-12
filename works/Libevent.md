@@ -779,8 +779,9 @@ struct evbuffer_file_segment *evbuffer_file_segment_new(int fd, ev_off_t offset,
 释放文件片段：
 void evbuffer_file_segment_free(struct evbuffer_file_segment *seg);
 
-
+将fileSegments中offset开始length长度写入buf：
 int evbuffer_add_file_segment(struct evbuffer *buf, struct evbuffer_file_segment *seg, ev_off_t offset, ev_off_t length);
+
 /* 2.1.2-alpha新增add_cleanup_cb方法，在结构体已经没被引用，即将释放时，回调执行 */
 typedef void (*evbuffer_file_segment_cleanup_cb)(struct evbuffer_file_segment const *seg, int flags, void *arg);
 void evbuffer_file_segment_add_cleanup_cb(struct evbuffer_file_segment *seg, evbuffer_file_segment_cleanup_cb cb, void *arg);
