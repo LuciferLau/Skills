@@ -763,6 +763,46 @@ int evbuffer_defer_callbacks(struct evbuffer *buffer, struct event_base *base);
 
 `int evbuffer_add_file(struct evbuffer *output, int fd, ev_off_t offset, size_t length); //将fd中offset开始处length字节添加到output末尾`
 
+因为add_file接口在多次添加同一个文件进buf时效率低(占有文件导致)，所以衍生出替代方法——文件片段
+```
+struct evbuffer_file_segment; //evbuffer-internal.h:235 结构体详情
+
+File segments由sendfile, splice, mmap, CreateFileMapping, malloc()-and-read()这几个后端中，选择最合适的实现.
+EVBUF_FS_CLOSE_ON_FREE: 如果设置了该标志，则通过函数evbuffer_file_segment_free释放文件段将会关闭底层(underlying)文件。
+EVBUF_FS_DISABLE_MMAP: 如果设置了该标志，禁用mmap类型的后端。
+EVBUF_FS_DISABLE_SENDFILE: 如果设置了该标志，禁用sendfile类型的后端。
+EVBUF_FS_DISABLE_LOCKING: 如果设置了该标志，则不会在文件段上分配锁：在多线程环境中使用文件段将是不安全的。
+
+创建文件片段：保存在fd对应的文件中从offset开始的length字节的片段
+struct evbuffer_file_segment *evbuffer_file_segment_new(int fd, ev_off_t offset, ev_off_t length, unsigned flags);
+
+释放文件片段：
+void evbuffer_file_segment_free(struct evbuffer_file_segment *seg);
+
+
+int evbuffer_add_file_segment(struct evbuffer *buf, struct evbuffer_file_segment *seg, ev_off_t offset, ev_off_t length);
+/* 2.1.2-alpha新增add_cleanup_cb方法，在结构体已经没被引用，即将释放时，回调执行 */
+typedef void (*evbuffer_file_segment_cleanup_cb)(struct evbuffer_file_segment const *seg, int flags, void *arg);
+void evbuffer_file_segment_add_cleanup_cb(struct evbuffer_file_segment *seg, evbuffer_file_segment_cleanup_cb cb, void *arg);
+```
+让evbuffer只能添加或删除
+
+`int evbuffer_freeze(struct evbuffer *buf, int at_front);`
+
+`int evbuffer_unfreeze(struct evbuffer *buf, int at_front);`
+
 ---
 ### R8: Connection listeners: accepting TCP connections (监听并接受TCP连接)
+> evconnlistener机制提供了监听和接受TCP连接的方法，在event2/listener.h中声明。
+
+#### 1️⃣创建和释放evconnlistener
+
+#### 2️⃣启用和禁用evconnlistener
+
+#### 3️⃣回调函数相关
+
+#### 4️⃣检测
+
+
+---
 ### R9: DNS for Libevent (使用libevent的DNS功能)
