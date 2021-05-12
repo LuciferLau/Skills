@@ -712,13 +712,14 @@ EVBUFFER_EOL_ANY | 行尾是任意数量、任意次序的回车和换行符。�
 EVBUFFER_EOL_NUL | 行尾是一个字节的\0(也就是ASCII的NUL)2.1.1-alpha新增
 
 *2-5:* 网络IO
-✍️
+
+✍️**write**
 
 `int evbuffer_write(struct evbuffer *buffer, evutil_socket_t fd); //尽量向fd写入buf所有内容`
 
 `int evbuffer_write_atmost(struct evbuffer *buffer, evutil_socket_t fd, ev_ssize_t howmuch); //将buffer前面至多howmuch字节写入到fd，若howmuch为-1，效果与write相同`
 
-📖
+📖**read**
 
 `int evbuffer_read(struct evbuffer *buffer, evutil_socket_t fd, int howmuch); //从fd读取至多howmuch字节到buffer`
 
