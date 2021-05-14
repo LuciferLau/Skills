@@ -798,6 +798,30 @@ void evbuffer_file_segment_add_cleanup_cb(struct evbuffer_file_segment *seg, evb
 
 #### 1️⃣创建和释放evconnlistener
 
+标志|描述
+--|:--
+LEV_OPT_LEAVE_SOCKETS_BLOCKING | 默认情况下，连接监听器接收新套接字后，会将其设置为非阻塞的，以便将其用于libevent。如果不想要这种行为，可以设置这个标志。
+LEV_OPT_CLOSE_ON_FREE | 如果设置了这个选项，释放连接监听器会关闭底层套接字。
+LEV_OPT_CLOSE_ON_EXEC | 如果设置了这个选项，连接监听器会为底层套接字设置close-on-exec标志。更多信息请查看fcntl和FD_CLOEXEC的平台文档。
+LEV_OPT_REUSEABLE | 某些平台在默认情况下，关闭某监听套接字后，要过一会儿其他套接字才可以绑定到同一个端口。设置这个标志会让libevent标记套接字是可重用的，这样一旦关闭，可以立即打开其他套接字，在相同端口进行监听。
+LEV_OPT_THREADSAFE | 为监听器分配锁，这样就可以在多个线程中安全地使用了。
+LEV_OPT_DISABLED | 禁用监听器，需手动调用，*evconnlistener_enable()* 开启监听。（2.1.1-alpha新增）
+LEV_OPT_DEFERRED_ACCEPT | 如果可以，告诉内核不要宣布accept套接字（上层不知道accept）直到它们发送数据到监听器并且准备好可读。如果客户端一开始不会传输数据，这个选项可能导致你永远不知道有客户端连接上了，并非所有OS都支持这个选项，如果不支持该选项将不会生效（2.1.1-alpha新增）
+
+`struct evconnlistener *evconnlistener_new(struct event_base *base, evconnlistener_cb cb, void *ptr, unsigned flags, int backlog, evutil_socket_t fd);`
+
+分配和返回一个新的连接监听器对象，使用event_base来得知何时在listen的fd上有新的TCP连接，并在连接到达时调用cb，flags控制监听行为。backlog也就是*listen()* 的参数
+
+`struct evconnlistener *evconnlistener_new_bind(struct event_base *base, evconnlistener_cb cb, void *ptr, unsigned flags, int backlog, const struct sockaddr *sa, int socklen);`
+
+如果需要new的同时做*bind()* 的操作，参数就多加上地址sa和地址长度socklen
+
+`void evconnlistener_free(struct evconnlistener *lev);`
+
+回调函数定义如下：sock为新accept的套接字，ptr是new时用户传递的指针
+
+`typedef void (*evconnlistener_cb)(struct evconnlistener *listener, evutil_socket_t sock, struct sockaddr *addr, int len, void *ptr);`
+
 #### 2️⃣启用和禁用evconnlistener
 
 #### 3️⃣回调函数相关
