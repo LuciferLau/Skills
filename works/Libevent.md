@@ -838,6 +838,7 @@ LEV_OPT_DEFERRED_ACCEPT | 如果可以，告诉内核不要宣布accept套接字
 
 #### 4️⃣检测
 获取监听器的fd：
+
 `evutil_socket_t evconnlistener_get_fd(struct evconnlistener *lev);`
 
 获取监听器绑定的event_base：
