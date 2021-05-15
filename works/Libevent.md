@@ -794,7 +794,7 @@ void evbuffer_file_segment_add_cleanup_cb(struct evbuffer_file_segment *seg, evb
 
 ---
 ### R8: Connection listeners: accepting TCP connections (监听并接受TCP连接)
-> evconnlistener机制提供了监听和接受TCP连接的方法，在event2/listener.h中声明。
+> evconnlistener机制提供了监听和接受TCP连接的方法，在event2/listener.h中声明。（项目使用socket的原生配套方法，建立了监听类）
 
 #### 1️⃣创建和释放evconnlistener
 
@@ -823,11 +823,32 @@ LEV_OPT_DEFERRED_ACCEPT | 如果可以，告诉内核不要宣布accept套接字
 `typedef void (*evconnlistener_cb)(struct evconnlistener *listener, evutil_socket_t sock, struct sockaddr *addr, int len, void *ptr);`
 
 #### 2️⃣启用和禁用evconnlistener
+禁用listen：
+
+`int evconnlistener_disable(struct evconnlistener *lev);`
+
+启用listen，如设置了**LEV_OPT_DISABLED** 就要手动启用，或者手动禁用后重新启用：
+
+`int evconnlistener_enable(struct evconnlistener *lev);`
 
 #### 3️⃣回调函数相关
+调整回调函数cb，及其参数arg：
+
+`void evconnlistener_set_cb(struct evconnlistener *lev, evconnlistener_cb cb, void *arg);`
 
 #### 4️⃣检测
+获取监听器的fd：
+`evutil_socket_t evconnlistener_get_fd(struct evconnlistener *lev);`
 
+获取监听器绑定的event_base：
+
+`struct event_base *evconnlistener_get_base(struct evconnlistener *lev);`
+
+错误发送时的回调：
+
+`typedef void (*evconnlistener_errorcb)(struct evconnlistener *lis, void *ptr); `
+
+`void evconnlistener_set_error_cb(struct evconnlistener *lev, evconnlistener_errorcb errorcb);`
 
 ---
 ### R9: DNS for Libevent (使用libevent的DNS功能)
