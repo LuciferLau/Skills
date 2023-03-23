@@ -9,8 +9,10 @@
 堆的内存都是程序员动态分配并回收的，栈可动可静，但它的动态是OS来分配并回收，程序员不干涉。  
 
 •	new和delete是如何实现的，new 与 malloc的异同处  
-异：new和delete都是运算符，所以是可运算符重载的（oprator new），底层是基于malloc和free函数实现的，
+异：new和delete都是运算符，所以是可运算符重载的（oprator new），底层是基于malloc和free函数（STL里的东西）实现的，
 通过内存池技术(memory pool)，将不同大小的内存用链表分成块，再根据申请内存的大小从不同的位置拿出一块大小最合适的内存给新的对象。  
+malloc需要手动计算需要申请的内存并填入参数，new不需要，自动根据类型计算。  
+malloc返回(void*)万能指针，所以需要强转回自己需要的类型，new直接按你申请的类型返回。   
 同：是都在堆上分配内存，且都要配套使用。不同点是new可以重载，且有new[]专门给数组分配内存，new不一定要指定内存大小。   
 
 **TIPS**：new[]和delete[]必须配套使用（代码规范来说），实际上，new[]基本类型时，delete也可以正确释放，
@@ -18,8 +20,8 @@
 （因为不连续，只释放数组头指针指向的内存？待求证，在MinGW下实验得出临时结论，实际上应该是未定义行为）
 ```
 int* A = new int[3]();
-delete A; // OK
-delete[] A; // still OK
+delete[] A; // OK
+//delete A; // still OK
 
 class myClass {
 public:
