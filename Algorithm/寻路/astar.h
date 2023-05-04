@@ -14,7 +14,7 @@ struct Block
 	int y;
 	double prior = 0.0;
 	bool valid = true;
-	bool path = false;
+	int path = 0;
 	bool isValid(){return valid == 1;}
 	void setInValid(){valid = 0;}
 	void tryAdd(std::vector<Block*>&, int, int, int, int);
