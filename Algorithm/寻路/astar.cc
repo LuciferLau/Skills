@@ -27,22 +27,21 @@ void initMap()
 	setBlock(4, 8, 0, 10);
 	setBlock(10, 20, 12, 20);
 	setBlock(23, 23, 23, 24);
-	setBlock(23, 24, 23, 23);
+//	setBlock(23, 24, 23, 23);
 }
 
 void showMap()
 {
-	int step = 1;
-	for(auto i=0; i<MAX_X; ++i)
+	for(auto i=0; i<MAX_Y; ++i)
 	{
-		for(auto j=0; j<MAX_Y; ++j)
+		for(auto j=0; j<MAX_X; ++j)
 		{
-			auto b = BigMap[i][j];
+			auto b = BigMap[j][i];
 			if (b.isValid())
 			{
-				if (b.path)
+				if (b.path > 0)
 				{
-					printf("%2d ", step++);
+					printf("%2d ", b.path);
 				}
 				else
 				{
@@ -63,6 +62,10 @@ void Block::tryAdd(std::vector<Block*> &v, int ox, int oy, int ex, int ey)
 	if (!isValid())
 	{
 		return;
+	}
+	if(prev == nullptr)
+	{
+		prev = &BigMap[ox][oy];
 	}
 	auto p = BigMap[ox][oy];
 	auto sdx = pow(x-ox, 2);
@@ -99,82 +102,44 @@ Block* findMax(std::vector<Block*> &v)
 	for(auto i=0; i<v.size(); ++i)
 	{
 		auto b = v[i];
-		if(min < 0)
+		if(!closed[b->x][b->y])
 		{
-			ret = b;
-			min = b->prior;
-		}
-		else if(min > b->prior)
-		{
-			ret = b;
-			min = b->prior;
+			if(min < 0)
+			{
+				ret = b;
+				min = b->prior;
+			}
+			else if(min > b->prior)
+			{
+				ret = b;
+				min = b->prior;
+			}
 		}
 	}
 //	printf("findMax,min=[%d,%d]\n", ret->x, ret->y);
 	return ret;
 }
 
-void recordPath(Block *dest, int sx, int sy)
+void recordPath(Block *dest, int sx, int sy, int cur)
 {
+	cur = cur + 1;
 	int nx = dest->x;
 	int ny = dest->y;
-	BigMap[nx][ny].path = true;
+	BigMap[nx][ny].path = cur;
 	if(nx == sx && ny == sy)
 	{
-	//	printf("loop_done\n");
 		return;
 	}
 	auto prev = dest->prev;
 	int x = prev->x;
 	int y = prev->y;
-	const char *c;
-	if(nx > x)
-	{
-		if(ny > y)
-		{
-			c = "RUP";
-		}
-		else if(ny == y)
-		{
-			c = "RIGHT";
-		}
-		else
-		{
-			c = "RDOWN";
-		}
-	}
-	else if(nx == x)
-	{
-		if(ny > y)
-		{
-			c = "UP";
-		}
-		else
-		{
-			c = "DOWN";
-		}
-	}
-	else
-	{
-		if(ny > y)
-		{
-			c = "LUP";
-		}
-		else if(ny == y)
-		{
-			c = "LEFT";
-		}
-		else
-		{
-			c = "LDOWN";
-		}
-	}
-//	printf("recordPath,now=[%d,%d],prev=[%d,%d],src=[%d,%d],dir=[%s]\n", nx, ny, x, y, sx, sy, c);
-	recordPath(prev, sx, sy);
+//	printf("recordPath,now=[%d,%d],prev=[%d,%d],src=[%d,%d]\n", nx, ny, x, y, sx, sy);
+	recordPath(prev, sx, sy, cur);
 }
 
 void Astar(int sx, int sy, int ex, int ey, int depth, int bx, int by)
 {
+	//首轮参数校验
 	if(depth == 0)
 	{
 		auto src = &BigMap[sx][sy];
@@ -185,29 +150,26 @@ void Astar(int sx, int sy, int ex, int ey, int depth, int bx, int by)
 			return;
 		}
 	}
-
 	depth = depth + 1;
+	//递归层数限制
 	if(depth > 100)
 	{
 		printf("fail_too_deep,cur=[%d,%d],depth=%d\n", sx, sy, depth);
 		return;
 	}
-
 	std::vector<Block*> open;
 	auto now = BigMap[sx][sy];
 	closed[sx][sy] = true;
-
+	//递归结束
 	if(sx == ex && sy == ey)
 	{
 		printf("ok,dest=[%d,%d],depth=%d\n", sx, sy, depth);
-		recordPath(&now, bx, by);
+		recordPath(&now, bx, by, 0);
 		showMap();
 		return;
 	}
-
 	bfs(open, sx, sy, ex, ey);
 	auto nb = findMax(open);
-	nb->prev = &now;
 	Astar(nb->x, nb->y, ex, ey, depth, bx, by);
 }
 
