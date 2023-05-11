@@ -177,7 +177,7 @@ void heapTest()
 	output(v, tips);
 
 	int randUpIdx = randGen(v.size()-1, 0, seed++);
-	int randUpVal = randGen(100, 50, 66);
+	int randUpVal = randGen(100, 50, seed++);
 	sprintf(tips, "idx=%d,oval=%d,val=%d,update:\n", randUpIdx, v[randUpIdx], randUpVal);
 	heap::update(v, DEC_FUNC, randUpIdx, randUpVal);
 	output(v, tips);
